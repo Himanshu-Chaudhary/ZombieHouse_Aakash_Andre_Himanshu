@@ -14,6 +14,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.Random;
+
 public class InputHandler
 {
     private static Map<KeyCode,Boolean> isDown_map = new HashMap<>();
@@ -26,6 +28,10 @@ public class InputHandler
     private static double mouse_x, mouse_y;
     private static double mouse_dx = 0;
     private static double mouse_dy = 0;
+
+    // This is sort of a hack. I'll try to find a better way to do this.
+    private static double drift_prevention = 0;
+    private static Random random = new Random();
 
     /*----------------------------------------------------------------
     Scene scene : The scene to which we listen for mouse & keyboard events.
@@ -58,6 +64,7 @@ public class InputHandler
             // Will be different depending on screen resolution, so we'll have to
             // figure that out at some point. Just moves back to middle of screen.
             moveCursor(1920/2,1080/2);
+            drift_prevention = random.nextDouble();
 
         });
         scene.setOnMouseDragged(me ->
@@ -98,12 +105,13 @@ public class InputHandler
     {
         return mouse_dy;
     }
+    public static double getDriftPrevention() { return drift_prevention; }
 
     /*----------------------------------------------------------------
     int screenX, screenY : The location on the computer screen (not the
     JavaFX window) to which the cursor is going to move.
      ---------------------------------------------------------------*/
-    public static void moveCursor(int screenX, int screenY) {
+    private static void moveCursor(int screenX, int screenY) {
         Platform.runLater(() -> {
             try {
                 Robot robot = new Robot();
