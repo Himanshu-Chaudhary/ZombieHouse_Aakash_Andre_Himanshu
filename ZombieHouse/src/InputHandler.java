@@ -55,6 +55,7 @@ public class InputHandler
         });
         scene.setOnMouseMoved(me ->
         {
+
             // Avoid triggering twice because of moveCursor's instruction.
             // If a perfect match to the center, no movement is updated.
             if(me.getScreenX()-960 != 0)
@@ -64,6 +65,7 @@ public class InputHandler
 
             moveCursor(960,540);
             drift_prevention = random.nextDouble();
+
         });
         scene.setOnMouseDragged(me ->
         {
