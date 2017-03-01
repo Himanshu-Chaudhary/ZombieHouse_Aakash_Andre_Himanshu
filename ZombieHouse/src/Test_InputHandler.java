@@ -1,4 +1,10 @@
-// Andre
+/*----------------------------------------------------------------
+    Andre' Green
+
+    Test_InputHandler merely acts as a simple testing suite for
+    InputHandler, checking that key-presses and mouse movements
+    are being picked up adequately well.
+ ----------------------------------------------------------------*/
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -13,10 +19,14 @@ import javafx.scene.shape.Sphere;
 
 public class Test_InputHandler extends Application
 {
-    final Group root = new Group();
-    static Sphere test_sphere_1 = new Sphere(50);
-    static Sphere test_sphere_2 = new Sphere(50);
+    private final Group root = new Group();
+    private static Sphere test_sphere_1 = new Sphere(50);
+    private static Sphere test_sphere_2 = new Sphere(50);
 
+    /*----------------------------------------------------------------
+    Stage stage : The stage to which the objects in the root are rendered.
+    Sets up the scene and adds the two spheres, and updates @ 60 hz.
+    ----------------------------------------------------------------*/
     @Override public void start(Stage stage)
     {
         root.getChildren().add(test_sphere_1);
@@ -35,6 +45,12 @@ public class Test_InputHandler extends Application
         stage.show();
     }
 
+    /*----------------------------------------------------------------
+    No input arguments.
+    This method simply updates our scene, moving one sphere according
+    to where the mouse cursor is on the screen, and the other according
+    to the W A S D keys pressed by the player.
+    ----------------------------------------------------------------*/
     private static void update()
     {
         test_sphere_2.setTranslateX( InputHandler.getMouseX() );
@@ -45,5 +61,9 @@ public class Test_InputHandler extends Application
         if( InputHandler.isKeyDown(KeyCode.W)){ test_sphere_1.setTranslateY(test_sphere_1.getTranslateY()-10); }
     }
 
+    /*----------------------------------------------------------------
+    String[] args : Does nothing at the moment, merely passed on to
+    launch. This is the standard way of starting JavaFX applications.
+    ----------------------------------------------------------------*/
     public static void main(String[] args){ launch(args ); }
 }
