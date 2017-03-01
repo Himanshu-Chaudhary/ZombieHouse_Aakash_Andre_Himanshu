@@ -6,8 +6,11 @@
     the frame rate.
  ----------------------------------------------------------------*/
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +18,14 @@ public class InputHandler
 {
     private static Map<KeyCode,Boolean> isDown_map = new HashMap<>();
     private static boolean mouse_left_down, mouse_right_down;
+
+    /* The absolute position for the mouse is not public, because
+    the mouse is getting sent back to the center of the screen each mouse
+    event, so that the change in position is accurate and so that the cursor
+    doesn't leave the window. */
     private static double mouse_x, mouse_y;
+    private static double mouse_dx = 0;
+    private static double mouse_dy = 0;
 
     /*----------------------------------------------------------------
     Scene scene : The scene to which we listen for mouse & keyboard events.
@@ -39,8 +49,16 @@ public class InputHandler
         });
         scene.setOnMouseMoved(me ->
         {
-            mouse_x = me.getX();
-            mouse_y = me.getY();
+            // getX, vs getScreenX
+            mouse_dx = mouse_x - me.getScreenX();
+            mouse_dy = mouse_y - me.getScreenY();
+            mouse_x = me.getScreenX();
+            mouse_y = me.getScreenY();
+
+            // Will be different depending on screen resolution, so we'll have to
+            // figure that out at some point. Just moves back to middle of screen.
+            moveCursor(1920/2,1080/2);
+
         });
         scene.setOnMouseDragged(me ->
         {
@@ -72,13 +90,28 @@ public class InputHandler
     {
         return mouse_right_down;
     }
-    public static double getMouseX()
+    public static double getMouseDX()
     {
-        return mouse_x;
+        return mouse_dx;
     }
-    public static double getMouseY()
+    public static double getMouseDY()
     {
-        return mouse_y;
+        return mouse_dy;
+    }
+
+    /*----------------------------------------------------------------
+    int screenX, screenY : The location on the computer screen (not the
+    JavaFX window) to which the cursor is going to move.
+     ---------------------------------------------------------------*/
+    public static void moveCursor(int screenX, int screenY) {
+        Platform.runLater(() -> {
+            try {
+                Robot robot = new Robot();
+                robot.mouseMove(screenX, screenY);
+            } catch (AWTException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 }
