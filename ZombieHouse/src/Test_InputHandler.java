@@ -19,18 +19,23 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+//they just made the floor a bunch of boxes, not planes.
+//they do have walls as planes though, so that's alright I guess.
+
 public class Test_InputHandler extends Application
 {
 
     //axes
     final Xform axisGroup = new Xform();
+    final Xform floorGroup = new Xform();
+    double i = 0;
 
     // Camera junk
     final PerspectiveCamera camera = new PerspectiveCamera(true);
     final Xform cameraXform = new Xform();
     final Xform cameraXform2 = new Xform();
     final Xform cameraXform3 = new Xform();
-    private static final double CAMERA_INITIAL_DISTANCE = -200;
+    private static final double CAMERA_INITIAL_DISTANCE = -100;
     private static final double CAMERA_INITIAL_X_ANGLE = 30.0;
     private static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
     private static final double CAMERA_NEAR_CLIP = 0.1;
@@ -57,11 +62,33 @@ public class Test_InputHandler extends Application
     private final Group root = new Group();
     private static Box test_box_1 = new Box(10,10,10);
 
+    private void buildFloor() {
+
+        final PhongMaterial grayMaterial = new PhongMaterial();
+        grayMaterial.setDiffuseColor(Color.DARKGRAY);
+        grayMaterial.setSpecularColor(Color.DARKGRAY);
+
+        for(int i = 0; i < 10; i++)
+        {
+            for(int j = 0; j < 10; j++)
+            {
+                floorGroup.getChildren().add(new Box(10,10,10));
+                floorGroup.getChildren().get(i*10+j).setTranslateX((i-5)*11);
+                floorGroup.getChildren().get(i*10+j).setTranslateZ((j-5)*11);
+                floorGroup.getChildren().get(i*10+j).setTranslateY(-10);
+                ((Box) floorGroup.getChildren().get(i*10+j)).setMaterial(grayMaterial);
+
+            }
+        }
+    }
+
     private void buildAxes() {
         System.out.println("buildAxes()");
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setDiffuseColor(Color.DARKRED);
         redMaterial.setSpecularColor(Color.RED);
+
+        test_box_1.setMaterial(redMaterial);
 
         final PhongMaterial greenMaterial = new PhongMaterial();
         greenMaterial.setDiffuseColor(Color.DARKGREEN);
@@ -92,11 +119,15 @@ public class Test_InputHandler extends Application
     {
         PointLight light = new PointLight();
         root.getChildren().add(light);
-        light.setTranslateY(100);
+        light.setTranslateY(1000);
+        light.setTranslateX(100);
+
+        buildFloor();
+        root.getChildren().add(floorGroup);
 
         root.setDepthTest(DepthTest.ENABLE);
-        root.getChildren().add(test_box_1);
         buildAxes();
+        root.getChildren().add(test_box_1);
         buildCamera();
         Scene scene = new Scene( root, 1024, 768, true );
 
@@ -123,12 +154,11 @@ public class Test_InputHandler extends Application
     ----------------------------------------------------------------*/
     private void update()
     {
-        //cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 1);
         if(my_drift_copy != InputHandler.getDriftPrevention())
         {
             cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 0.1 * InputHandler.getMouseDX());
             my_drift_copy = InputHandler.getDriftPrevention();
-            //cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 0.1*InputHandler.getMouseDY());
+            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 0.1 *InputHandler.getMouseDY());
         }
 
         cameraXform.ry.setAngle(cameraXform.ry.getAngle()%360);
@@ -156,6 +186,11 @@ public class Test_InputHandler extends Application
         {
             x_component += Math.cos(Math.toRadians(cameraXform.ry.getAngle()-90));
             y_component += Math.sin(Math.toRadians(cameraXform.ry.getAngle()-90));
+        }
+
+        if( InputHandler.isKeyDown(KeyCode.SPACE))
+        {
+            System.out.println(InputHandler.getMouseDX());
         }
 
         double magnitude = Math.sqrt(x_component*x_component+y_component*y_component);

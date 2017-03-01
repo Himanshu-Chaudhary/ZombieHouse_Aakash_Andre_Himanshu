@@ -55,22 +55,19 @@ public class InputHandler
         });
         scene.setOnMouseMoved(me ->
         {
-            // getX, vs getScreenX
-            mouse_dx = mouse_x - me.getScreenX();
-            mouse_dy = mouse_y - me.getScreenY();
-            mouse_x = me.getScreenX();
-            mouse_y = me.getScreenY();
+            // Avoid triggering twice because of moveCursor's instruction.
+            // If a perfect match to the center, no movement is updated.
+            if(me.getScreenX()-960 != 0)
+                mouse_dx = me.getScreenX()-960;
+            if(me.getScreenY()-540 != 0)
+                mouse_dy = me.getScreenY()-540;
 
-            // Will be different depending on screen resolution, so we'll have to
-            // figure that out at some point. Just moves back to middle of screen.
-            moveCursor(1920/2,1080/2);
+            moveCursor(960,540);
             drift_prevention = random.nextDouble();
-
         });
         scene.setOnMouseDragged(me ->
         {
-            mouse_x = me.getX();
-            mouse_y = me.getY();
+
         });
     }
 
@@ -110,6 +107,8 @@ public class InputHandler
     /*----------------------------------------------------------------
     int screenX, screenY : The location on the computer screen (not the
     JavaFX window) to which the cursor is going to move.
+    This itself counts as a mouse movement, though, so we have to be
+    careful not to count it at being an actual motion from the user.
      ---------------------------------------------------------------*/
     private static void moveCursor(int screenX, int screenY) {
         Platform.runLater(() -> {
