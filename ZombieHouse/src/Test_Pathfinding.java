@@ -1,9 +1,13 @@
 /*----------------------------------------------------------------
     Andre' Green
 
-    Test_InputHandler merely acts as a simple testing suite for
-    InputHandler, checking that key-presses and mouse movements
-    are being picked up adequately well.
+    A test class for Pathfinding class.
+
+    Finds and lights up the shortest path to 20,20 on the board from the
+    player's current position, avoiding walls on the way.
+
+    Not up to standard, so it's ugly code, but seeing as it's just for
+    fiddling around with I don't think we need to worry about it for now.
  ----------------------------------------------------------------*/
 
 import javafx.animation.Animation;
@@ -11,6 +15,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.*;
+import javafx.scene.effect.Bloom;
+import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -19,11 +25,15 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.Map;
+
 //they just made the floor a bunch of boxes, not planes.
 //they do have walls as planes though, so that's alright I guess.
 
-public class Test_InputHandler extends Application
+public class Test_Pathfinding extends Application
 {
+
+    public static PathNode[][] board = new PathNode[40][40];
 
     //axess
     final Xform axisGroup = new Xform();
@@ -67,17 +77,31 @@ public class Test_InputHandler extends Application
 
     private void buildFloor() {
 
+        for(int x = 0; x < 40; x++)
+        {
+            for(int y = 0; y < 40; y++)
+            {
+                board[x][y] = new PathNode(x,y,0);
+                if(x==39 || y == 39 || x == 0 || y == 0) board[x][y] = null;
+            }
+        }
+        for(int i = 1; i < 20; i++)
+        {
+            board[10][i] = null;
+        }
+
         final PhongMaterial grayMaterial = new PhongMaterial();
         grayMaterial.setDiffuseColor(Color.DARKGRAY);
         grayMaterial.setSpecularColor(Color.DARKGRAY);
+        Reflection reflection = new Reflection();
 
         for(int i = 0; i < 40; i++)
         {
             for(int j = 0; j < 40; j++)
             {
                 floorGroup.getChildren().add(new Box(10,10,10));
-                floorGroup.getChildren().get(i*40+j).setTranslateX((i-5)*11);
-                floorGroup.getChildren().get(i*40+j).setTranslateZ((j-5)*11);
+                floorGroup.getChildren().get(i*40+j).setTranslateX((i)*11);
+                floorGroup.getChildren().get(i*40+j).setTranslateZ((j)*11);
                 floorGroup.getChildren().get(i*40+j).setTranslateY(-10);
                 ((Box) floorGroup.getChildren().get(i*40+j)).setMaterial(grayMaterial);
                 //((Box) floorGroup.getChildren().get(i*40+j)).setEffect(reflection);
@@ -92,7 +116,7 @@ public class Test_InputHandler extends Application
         redMaterial.setDiffuseColor(Color.DARKRED);
         redMaterial.setSpecularColor(Color.RED);
 
-        test_box_1.setMaterial(redMaterial);
+       // test_box_1.setMaterial(redMaterial);
 
         final PhongMaterial greenMaterial = new PhongMaterial();
         greenMaterial.setDiffuseColor(Color.DARKGREEN);
@@ -158,40 +182,45 @@ public class Test_InputHandler extends Application
     ----------------------------------------------------------------*/
     private void update()
     {
+
+        int x = (int) (test_box_1.getTranslateX()/11);
+        int z = (int) (test_box_1.getTranslateZ()/11);
+        /* do the pathfinding */
+
         double dist;
         for(int i = 0; i < 40; i++)
         {
             for(int j = 0; j < 40; j++)
             {
-                dist = Math.sqrt(Math.pow(floorGroup.getChildren().get(i*40+j).getTranslateX()-test_box_1.getTranslateX(),2)+
-                                Math.pow(floorGroup.getChildren().get(i*40+j).getTranslateZ()-test_box_1.getTranslateZ(),2));
-                //floorGroup.getChildren().get(i*40+j).setTranslateY( dist/10-15 ); //dist - 15 );
-                if(j%5==0 && i%5 == 0) floorGroup.getChildren().get(i*40+j).setTranslateY( dist/5 -15 ); //dist - 15 );
+                if( board[i][j] != null)
+                {
+                    ((Box) floorGroup.getChildren().get(i * 40 + j)).setMaterial(new PhongMaterial(Color.GREEN));
+                    floorGroup.getChildren().get(i*40+j).setTranslateY(-10);
+                }
+                else
+                {
+                    ((Box) floorGroup.getChildren().get(i * 40 + j)).setMaterial(new PhongMaterial(Color.WHITE));
+                    floorGroup.getChildren().get(i*40+j).setTranslateY(0);
+                }
 
-                /*if(dist > 100)
-                    ((Box) floorGroup.getChildren().get(i*40+j)).setMaterial( new PhongMaterial(Color.BLACK));
-                else
-                    ((Box) floorGroup.getChildren().get(i*40+j)).setMaterial( new PhongMaterial(Color.WHITE));
-                    */
-                // so this is dumb and slow, because it makes a new material for every block every frame,
-                // but this idea would work to fade stuff out. Ideally don't even try to render blocks out of range
-                //((Box)floorGroup.getChildren().get(i*40+j)).setMaterial( new PhongMaterial(Color.color(dist,dist,dist)){{this.setSpecularColor(Color.GRAY);}});
-                if (floorGroup.getChildren().get(i*40+j).isVisible())
-                {
-                    ((Box) floorGroup.getChildren().get(i*40+j)).setMaterial( new PhongMaterial(Color.BLUE));
-                }
-                else
-                {
-                    ((Box) floorGroup.getChildren().get(i*40+j)).setMaterial( new PhongMaterial(Color.RED));
-                    System.out.println("hey");
-                }
             }
         }
+
+        lightPath(Pathfinding.getHeading(board, board[x+1][z+1], board[20][20]), board[20][20]);
+
+        //System.out.println(x + " " + z);
+        ((Box) floorGroup.getChildren().get(x*40+z)).setMaterial( new PhongMaterial(Color.MAGENTA));
+
+
+
+        Bloom bloom = new Bloom();
+        bloom.setThreshold(0.1);
+        test_box_1.setEffect(bloom);
 
         light.setTranslateX(test_box_1.getTranslateX());
         light.setTranslateZ(test_box_1.getTranslateZ());
         light.setTranslateY(-20);
-        light.setColor(Color.color(0,1,0));
+        light.setColor(Color.color(1,1,1));
 
         if(my_drift_copy != InputHandler.getDriftPrevention())
         {
@@ -245,7 +274,7 @@ public class Test_InputHandler extends Application
         light2.setTranslateX(test_box_1.getTranslateX());
         light2.setTranslateZ(test_box_1.getTranslateZ());
         light2.setTranslateY(10);
-        light2.setColor(Color.color(0.3,0.3,0.3));
+        light2.setColor(Color.color(0.8,0.8,0.8));
     }
 
     /*----------------------------------------------------------------
@@ -253,4 +282,15 @@ public class Test_InputHandler extends Application
     launch. This is the standard way of starting JavaFX applications.
     ----------------------------------------------------------------*/
     public static void main(String[] args){ launch(args ); }
+
+    private void lightPath(Map<PathNode, PathNode> m, PathNode n)
+    {
+        if (m == null) return;
+        if (n == null) return;
+        lightPath( m, m.get(n));
+        ((Box) floorGroup.getChildren().get(n.x*40+n.y)).setMaterial( new PhongMaterial(Color.CYAN));
+        //System.out.println("--" + n);
+    }
+
+
 }

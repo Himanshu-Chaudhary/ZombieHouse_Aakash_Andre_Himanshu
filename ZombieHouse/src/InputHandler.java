@@ -21,15 +21,16 @@ public class InputHandler
     private static Map<KeyCode,Boolean> isDown_map = new HashMap<>();
     private static boolean mouse_left_down, mouse_right_down;
 
-    /* The absolute position for the mouse is not public, because
+    /* The absolute position for the mouse is not used, because
     the mouse is getting sent back to the center of the screen each mouse
     event, so that the change in position is accurate and so that the cursor
     doesn't leave the window. */
-    private static double mouse_x, mouse_y;
     private static double mouse_dx = 0;
     private static double mouse_dy = 0;
 
     // This is sort of a hack. I'll try to find a better way to do this.
+    // Actually all we need is a flip-flop mechanism between true and false.
+    // if the flip-flop value in memory is the same, don't update. If it isn't, do update.
     private static double drift_prevention = 0;
     private static Random random = new Random();
 
@@ -43,6 +44,7 @@ public class InputHandler
         scene.setOnKeyPressed(event -> isDown_map.put(event.getCode(), true));
         scene.setOnKeyReleased(event -> isDown_map.put(event.getCode(), false));
 
+        // move into seperate function to avoid repeated code
         scene.setOnMousePressed( me ->
         {
             mouse_left_down = me.isPrimaryButtonDown();
@@ -106,7 +108,7 @@ public class InputHandler
     }
     public static double getDriftPrevention() { return drift_prevention; }
 
-    /*----------------------------------------------------------------
+    /*---------------------------------------------------------------
     int screenX, screenY : The location on the computer screen (not the
     JavaFX window) to which the cursor is going to move.
     This itself counts as a mouse movement, though, so we have to be
