@@ -4,10 +4,10 @@ package Entities;
  */
 public abstract class Creature extends Entity
 {
-  double speed = 0.00; //speed of zombie or Player
-  double health = 0.00; // health of zombie or player
-  double damage = 0.00;
-  double stepDistance = 0.00; //step distance of zombie or player.
+  public double speed = 0.00; //speed of zombie or Player
+  public double health = 0.00; // health of zombie or player
+  public double damage = 0.00;
+  public double stepDistance = 0.00; //step distance of zombie or player.
   WalkingBehavior walkingBehavior;
   FightingBehavior fightingBehavior;
 

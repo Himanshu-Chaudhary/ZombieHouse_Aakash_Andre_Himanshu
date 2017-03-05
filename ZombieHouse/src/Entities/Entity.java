@@ -8,7 +8,8 @@ package Entities;
 
 public abstract class Entity
 {
-  double positionX;
-  double positionY;
-  double positionZ;
+  public double positionX;
+  public double positionY;
+  public double positionZ;
+  public double direction;
 }

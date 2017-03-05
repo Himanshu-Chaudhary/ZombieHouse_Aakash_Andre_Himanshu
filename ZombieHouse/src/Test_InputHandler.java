@@ -232,6 +232,7 @@ public class Test_InputHandler extends Application
             System.out.println(InputHandler.getMouseDX());
         }
 
+
         double magnitude = Math.sqrt(x_component*x_component+y_component*y_component);
         if(magnitude != 0)
         {
