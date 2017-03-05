@@ -1,5 +1,0 @@
-// Aakash
-
-public class Entity
-{
-}
