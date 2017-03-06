@@ -445,7 +445,7 @@ public class ProceduralMap
               if (x%2 == 1 && y%2 == 1 && r.isRoom){
                 double chance = (difficulty-.5)/7d;
                 if (Math.random() < chance){
-                  map[y+1][x+1] = new Tile(0,y+1,x+1, !r.isRoom); //create obstical
+                  map[y+1][x+1] = new Tile(0,y+1,x+1, !r.isRoom); //create obstacle
                   map[y+1][x+1].setRegion(r.region);
                   map[y+1][x+1].isObstacle = true;
                 }
