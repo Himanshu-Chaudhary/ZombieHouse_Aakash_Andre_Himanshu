@@ -16,7 +16,7 @@ public class Pathfinding
      * Returns a map giving the shortest path using Dijkstra's algorithm.
      * Will try to swap out for A* at some later point.
      */
-    public static Map<PathNode,PathNode> getHeading( PathNode[][] board, PathNode start_position, PathNode end_position)
+    public static Map<PathNode,PathNode> getPath(PathNode[][] board, PathNode start_position, PathNode end_position)
     {
         if(start_position == null) return null;
 

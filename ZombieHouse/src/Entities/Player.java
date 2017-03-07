@@ -2,7 +2,7 @@ package Entities;
 
 import Input.InputHandler;
 import general.PathNode;
-import general.Test_Player_and_MapGenerator;
+import general.Test_Pathfinding_and_Map;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
@@ -13,6 +13,7 @@ import javafx.scene.transform.Rotate;
 public class Player extends Creature
 {
   public double stamina = 0;
+  PathNode last_good_node = null;
 
   public Player()
   {
@@ -28,7 +29,7 @@ public class Player extends Creature
   @Override
   public void update()
   {
-    walk(Test_Player_and_MapGenerator.board ); // Update the player position based on input.
+    walk(Test_Pathfinding_and_Map.board ); // Update the player position based on input.
     display(); // Update the player's mesh.
   }
 
@@ -78,11 +79,16 @@ public class Player extends Creature
 
       double w2p_x;
       double w2p_z;
+
+      // I am dumbly checking all walls for simplicity,
+      // we can make this much faster if needed.
       for(int x = 0; x < 50; x++)
       {
         for(int y = 0; y < 50; y++)
         {
           // Collide properly with nulled out blocks/square walls.
+          // to do: make the pillars/obstacles have slightly smaller hitboxes
+          // or maybe we can change the center of mass to 5,5 instead of 0,0.
           if(board[x][y] == null)
           {
             w2p_x = x*10 - this.positionX;

@@ -242,7 +242,7 @@ public class Test_Pathfinding extends Application
             }
         }
 
-        lightPath(Pathfinding.getHeading(board, board[x+1][z+1], board[20][20]), board[20][20]);
+        lightPath(Pathfinding.getPath(board, board[x+1][z+1], board[20][20]), board[20][20]);
 
         //System.out.println(x + " " + z);
         ((Box) floorGroup.getChildren().get(x*40+z)).setMaterial( new PhongMaterial(Color.MAGENTA));

@@ -6,8 +6,8 @@ package general;
  */
 public class PathNode implements Comparable<PathNode>
 {
-    int x;
-    int y;
+    public int x;
+    public int y;
     double priority;
 
     @Override
