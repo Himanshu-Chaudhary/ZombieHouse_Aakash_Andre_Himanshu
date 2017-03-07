@@ -1,4 +1,4 @@
-// Everyone
+package general;// Everyone
 
 public class Main
 {

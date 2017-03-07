@@ -1,5 +1,0 @@
-// Everyone
-
-public class GUI
-{
-}

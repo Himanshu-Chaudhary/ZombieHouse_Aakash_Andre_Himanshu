@@ -1,3 +1,5 @@
+package general;
+
 /*
     Andre' Green
     This class is used so we can mess with priority queues in the pathfinding class.

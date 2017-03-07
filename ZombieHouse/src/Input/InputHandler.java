@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------
+package Input;/*----------------------------------------------------------------
     Andre' Green
 
     InputHandler manages input from the keyboard and mouse.
@@ -13,7 +13,6 @@ import javafx.scene.input.KeyCode;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-
 import java.util.Random;
 
 public class InputHandler
