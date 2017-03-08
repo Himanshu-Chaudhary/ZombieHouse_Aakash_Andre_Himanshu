@@ -180,7 +180,6 @@ public class Test_Texture_and_Game extends Application
       zombie.direction = Math.toDegrees(Math.atan2( dy, dx));
       //System.out.println(zombie.direction);
     }
-
   }
 
   @Override
