@@ -2,6 +2,7 @@ package Entities;
 
 import general.PathNode;
 import general.Test_Pathfinding_and_Map;
+import general.Test_Texture_and_Game;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 
@@ -26,7 +27,7 @@ public class Zombie extends Creature
   @Override
   public void update()
   {
-    walk( Test_Pathfinding_and_Map.board );
+    walk( Test_Texture_and_Game.board );
     display();
   }
 

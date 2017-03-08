@@ -3,6 +3,7 @@ package Entities;
 import Input.InputHandler;
 import general.PathNode;
 import general.Test_Pathfinding_and_Map;
+import general.Test_Texture_and_Game;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
@@ -29,7 +30,7 @@ public class Player extends Creature
   @Override
   public void update()
   {
-    walk(Test_Pathfinding_and_Map.board ); // Update the player position based on input.
+    walk(Test_Texture_and_Game.board ); // Update the player position based on input.
     display(); // Update the player's mesh.
   }
 
@@ -38,6 +39,7 @@ public class Player extends Creature
     double x_component = 0;
     double z_component = 0;
 
+    // only let player run again if stamina above 20
     if( InputHandler.isKeyDown(KeyCode.SHIFT) && this.stamina > 0)
     {
       this.setSpeed(3);
