@@ -35,9 +35,6 @@ public class PastSelf{
 
         }
 
-        public void nextMesh(){
-
-        }
 
     public int getTurnWorldEnds(){
         return turnWorldEnds;
