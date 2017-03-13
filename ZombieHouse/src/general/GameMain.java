@@ -36,7 +36,7 @@ public class GameMain extends Application
 
   public Group root = new Group();
   PhongMaterial black = new PhongMaterial(Color.BLACK);
-  MyCamera my_camera;
+  public static MyCamera my_camera;
 
   Player player;
   PointLight player_light = new PointLight();

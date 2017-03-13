@@ -16,7 +16,7 @@ public class MyCamera
   private static final double CAMERA_INITIAL_DISTANCE = -25;
   private static final double CAMERA_INITIAL_X_ANGLE = 30.0;
   private static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
-  private static final double CAMERA_NEAR_CLIP = 10;
+  private static final double CAMERA_NEAR_CLIP = 5;
   private static final double CAMERA_FAR_CLIP = 400.0;
   private double my_drift_copy;
 
@@ -45,19 +45,17 @@ public class MyCamera
     int cx = (int) ((cameraXform.getTranslateX()+length*Math.sin(Math.toRadians(cameraXform.ry.getAngle())))/10);
     int cz = (int) ((cameraXform.getTranslateZ()+length*Math.cos(Math.toRadians(cameraXform.ry.getAngle())))/10);
 
-    //GameMain.someBox.setTranslateX( ((cameraXform.getTranslateX()+length*Math.sin(Math.toRadians(cameraXform.ry.getAngle()))) ));
-    //GameMain.someBox.setTranslateZ( ((cameraXform.getTranslateZ()+length*Math.cos(Math.toRadians(cameraXform.ry.getAngle()))) ));
+    int cx2 = (int) ((cameraXform.getTranslateX()+(length+1)*Math.sin(Math.toRadians(cameraXform.ry.getAngle())))/10);
+    int cz2 = (int) ((cameraXform.getTranslateZ()+(length+1)*Math.cos(Math.toRadians(cameraXform.ry.getAngle())))/10);
 
     if(cx < 0 || cz < 0 || GameMain.board[cx][cz] == null)
     {
       camera.setTranslateZ(camera.getTranslateZ()+1);
     }
-    else if (cx > 0 && cz > 0 && GameMain.board[cx][cz] != null && camera.getTranslateZ() > -30 && cameraXform.getTranslateY() < 30)
+    if (cx2 > 0 && cz2 > 0 && GameMain.board[cx2][cz2] != null && camera.getTranslateZ() > -30 && cameraXform.getTranslateY() < 30)
     {
       camera.setTranslateZ(camera.getTranslateZ()-1);
     }
-
-    //else camera.setTranslateZ(-50);
 
   }
 

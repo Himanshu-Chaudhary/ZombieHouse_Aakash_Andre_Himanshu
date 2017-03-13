@@ -103,6 +103,7 @@ public class Player extends Creature
     {
       x_component += Math.sin(Math.toRadians(this.direction+90));
       z_component += Math.cos(Math.toRadians(this.direction+90));
+      this.direction += 3;
     }
     if( InputHandler.isKeyDown(KeyCode.S))
     {
