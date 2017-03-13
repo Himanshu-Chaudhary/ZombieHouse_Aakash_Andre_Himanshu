@@ -40,7 +40,8 @@ public class MyCamera
 
     // So this doesn't work, BUT if you also use direction of player,
     // then we can find if in wall or not. Repeat decreasing Z until we're not in a wall, or the camera's too close.
-    double length = Math.cos(Math.toRadians(cameraXform.rx.getAngle()))*camera.getTranslateZ();
+    double length = Math.cos(Math.toRadians(cameraXform.rx.getAngle()))*camera.getTranslateZ() + 0.5; // increase smidge,
+                                                                                              //we're still clipping walls.
     // Then each iteration, back out as far as possible again. Inefficient but should work.
     int cx = (int) ((cameraXform.getTranslateX()+length*Math.sin(Math.toRadians(cameraXform.ry.getAngle())))/10);
     int cz = (int) ((cameraXform.getTranslateZ()+length*Math.cos(Math.toRadians(cameraXform.ry.getAngle())))/10);
@@ -70,7 +71,7 @@ public class MyCamera
     cameraXform3.setRotateZ(180.0);
     cameraXform.setTranslateY(10);
 
-    camera.setFieldOfView(50);
+    camera.setFieldOfView(70);
     camera.setNearClip(CAMERA_NEAR_CLIP);
     camera.setFarClip(CAMERA_FAR_CLIP);
     camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);

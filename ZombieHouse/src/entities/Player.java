@@ -21,7 +21,7 @@ public class Player extends Creature
   private double stamina_decay = 2;
   private double walking_speed = 0.8;
   private double running_speed = 2;
-  private double health_max = 100;
+  private double health_max = 30;
 
   // Timing variables
   private int frame = 0;

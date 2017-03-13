@@ -1,5 +1,8 @@
 package general;
 
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.shape.Shape3D;
 import map_generation.Tile;
 import map_generation.ProceduralMap;
 import camera.MyCamera;
@@ -23,6 +26,16 @@ import java.util.Random;
 
 public class GameMain extends Application
 {
+
+  public int level; // Every level means a new map, reset in player lives, and reset in past selves.
+  public int lives = 5; // Every life means zombies go back to original positions, and player is restored.
+
+  Image image = new Image(getClass().getResourceAsStream("checker_plain_2.jpg"));
+  Image specular = new Image(getClass().getResourceAsStream("checker_specular.jpg"));
+  Image normal = new Image(getClass().getResourceAsStream("checker_normal.jpg"));
+
+  public ArrayList<Integer[]> zombie_spawn_locations = new ArrayList<>();
+
   private static Random random = new Random(0);
   public int exit_x, exit_y;
 
@@ -31,8 +44,6 @@ public class GameMain extends Application
   public static PathNode[][] board = new PathNode[board_size][board_size];
   public static Box[][] board_boxes = new Box[board_size][board_size];
   public static Tile[][] map;
-
-  public static Box someBox = new Box(10,10,10);
 
   public Group root = new Group();
   PhongMaterial black = new PhongMaterial(Color.BLACK);
@@ -47,7 +58,6 @@ public class GameMain extends Application
 
   ArrayList<MyParticle> particles = new ArrayList<>();
 
-
   public static void main(String[] args)
   {
     launch(args);
@@ -55,9 +65,6 @@ public class GameMain extends Application
 
   @Override public void start( Stage stage )
   {
-
-    root.getChildren().add(someBox);
-
     // Add the player.
     player = new Player();
     root.getChildren().addAll( player.mesh );
@@ -72,22 +79,7 @@ public class GameMain extends Application
     // Build the map & board for path finding.
     map = ProceduralMap.generateMap(board_size, board_size, 2);
     buildBoard();
-
-    // Spawn the zombies.
-    for(int x = 1; x < board_size-2; x++)
-    {
-      for(int y = 1; y < board_size-2; y++)
-      {
-        if(!map[x][y].isObstacle && !map[x][y].isHallway && !map[x][y].isBorder && !map[x][y].isWall)
-        {
-          if(random.nextFloat() > 0.98)
-          {
-            zombies.add( new Zombie(x*10,5,y*10,player,board));
-            zombies.get(zombies.size()-1).randomWalk = random.nextFloat() > 0.5;
-          }
-        }
-      }
-    }
+    spawnZombies();
 
     // Try to update every 60th of a second.
     Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), ev -> update()));
@@ -103,6 +95,27 @@ public class GameMain extends Application
     scene.setCamera(my_camera.camera);
     stage.setScene( scene );
     stage.show();
+  }
+
+  private void spawnZombies()
+  {
+    // Spawn the zombies.
+    zombie_spawn_locations.removeAll(zombie_spawn_locations);
+    for(int x = 1; x < board_size-2; x++)
+    {
+      for(int y = 1; y < board_size-2; y++)
+      {
+        if(!map[x][y].isObstacle && !map[x][y].isHallway && !map[x][y].isBorder && !map[x][y].isWall)
+        {
+          if(random.nextFloat() > 0.98)
+          {
+            zombies.add( new Zombie(x*10,5,y*10,player,board));
+            zombies.get(zombies.size()-1).randomWalk = random.nextFloat() > 0.5;
+            zombie_spawn_locations.add(new Integer[] { x*10,5,y*10 } );
+          }
+        }
+      }
+    }
   }
 
   private void update()
@@ -149,6 +162,10 @@ public class GameMain extends Application
     double time = System.currentTimeMillis();
     player.update(time);
 
+    if(InputHandler.isKeyDown(KeyCode.SHIFT))
+      particles.add( (new MyParticle(player.positionX+(Math.random()-0.5)*3,7+(Math.random()-0.5)*10,player.positionZ+(Math.random()-0.5)*3,
+            random.nextFloat()-0.5,(random.nextFloat()-0.5)*2,random.nextFloat()-0.5) ));
+
     // Update the zombies.
     for(int i = 0; i < zombies.size(); i++)
     {
@@ -170,11 +187,49 @@ public class GameMain extends Application
     {
       dead = true;
       root.getChildren().removeAll(player.mesh);
-      for(int i = 0; i < 200; i++){ particles.add( (new MyParticle(player.positionX,15,player.positionZ,
-              random.nextFloat()-0.5,(random.nextFloat()-0.5)*2,random.nextFloat()-0.5) )); }
+//      for(int i = 0; i < 200; i++){ particles.add( (new MyParticle(player.positionX,15,player.positionZ,
+//              random.nextFloat()-0.5,(random.nextFloat()-0.5)*2,random.nextFloat()-0.5) )); }
+
+      // Reset the player.
+      lives -= 1;
+      System.out.println(lives);
+      if(lives > 0)
+      {
+        System.out.println(lives);
+        player.health = 30;
+        player.proposeState("IDLE", 0, 10);
+        player.positionX = 30;
+        player.positionY = 5;
+        player.positionZ = 30;
+
+        // Remove all current zombies and zombie meshes, then add them all back.
+        for (Zombie z : zombies) { root.getChildren().remove(z.healthbar); }
+        for (Node[] mesh : zombie_meshes) { root.getChildren().removeAll(mesh); }
+        zombies.removeAll(zombies);
+        for (Integer[] l : zombie_spawn_locations) { zombies.add(new Zombie(l[0], l[1], l[2], player, board)); }
+        dead = false;
+      }
     }
     // If the player isn't dead, then add back the mesh.
     if(!dead){ root.getChildren().addAll(player.mesh); }
+
+
+    // If the exit is reached, restart.
+    if( Math.sqrt( Math.pow(exit_x*10-player.positionX,2) + Math.pow(exit_y*10-player.positionZ,2)) < 20)
+    {
+      lives = 5;
+      player.health = 30;
+      player.proposeState("IDLE",0,10);
+      player.positionX = 30;
+      player.positionY = 5;
+      player.positionZ = 30;
+
+      for( Zombie z : zombies ){ root.getChildren().remove(z.healthbar); }
+      for( Node[] mesh : zombie_meshes ){ root.getChildren().removeAll(mesh); }
+      zombies.removeAll(zombies);
+      buildBoard();
+      spawnZombies();
+    }
 
     // Update the camera and light based on the player's new information.
     // [ This avoids stuttering ]
@@ -209,27 +264,45 @@ public class GameMain extends Application
         else if (map[x][y].getRegion() == 2) board_boxes[x][y].setMaterial( new PhongMaterial(Color.color(0,d,0)));
         else if (map[x][y].getRegion() == 3) board_boxes[x][y].setMaterial( new PhongMaterial(Color.color(0,0,d)));
         else board_boxes[x][y].setMaterial( new PhongMaterial(Color.color(d,d,d)));
+//          ((PhongMaterial) board_boxes[x][y].getMaterial()).setDiffuseMap(image);
+//          ((PhongMaterial) board_boxes[x][y].getMaterial()).setSpecularMap(specular);
+//          ((PhongMaterial) board_boxes[x][y].getMaterial()).setBumpMap(normal);
+
       }
     }
   }
   private void buildBoard() {
 
+    ArrayList<Node> remove_list = new ArrayList<>();
+    for( Node child : root.getChildren() )
+    {
+      if(child instanceof Box)
+      {
+        remove_list.add( child );
+      }
+    }
+    root.getChildren().removeAll(remove_list);
+
+    map = ProceduralMap.generateMap(board_size, board_size, 2);
     PointLight exitLight = new PointLight();
     root.getChildren().add(exitLight);
     for(int x = 0; x < map.length; x++)
     {
       for(int y = 0; y < map[0].length; y++)
       {
+        board_boxes[x][y] = null;
+        board[x][y] = null;
         if(x != board_size -1 && y != board_size-1){ board[x][y] = new PathNode(x,y,0); }
         board_boxes[x][y] = new Box(10,10,10); // 9.5
         board_boxes[x][y].setTranslateX(x*10);
         board_boxes[x][y].setTranslateZ(y*10);
         board_boxes[x][y].setTranslateY(-10);
         root.getChildren().add(board_boxes[x][y]);
+        board_boxes[x][y].setHeight(10);
         switch (map[x][y].type){
           case wall: {
             board_boxes[x][y].setMaterial( new PhongMaterial(Color.GRAY) );
-            board_boxes[x][y].setHeight(75);
+            board_boxes[x][y].setHeight(15);
             board[x][y] = null;
             break;
           }
