@@ -32,6 +32,8 @@ public class GameMain extends Application
   public static Box[][] board_boxes = new Box[board_size][board_size];
   public static Tile[][] map;
 
+  public static Box someBox = new Box(10,10,10);
+
   public Group root = new Group();
   PhongMaterial black = new PhongMaterial(Color.BLACK);
   MyCamera my_camera;
@@ -53,6 +55,9 @@ public class GameMain extends Application
 
   @Override public void start( Stage stage )
   {
+
+    root.getChildren().add(someBox);
+
     // Add the player.
     player = new Player();
     root.getChildren().addAll( player.mesh );

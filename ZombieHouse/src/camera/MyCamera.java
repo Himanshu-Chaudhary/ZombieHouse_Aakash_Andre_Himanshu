@@ -1,9 +1,11 @@
 package camera;
 
+import general.GameMain;
 import input.InputHandler;
 import entities.Player;
 import general.Xform;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.input.KeyCode;
 
 public class MyCamera
 {
@@ -32,6 +34,31 @@ public class MyCamera
     }
     cameraXform.ry.setAngle(cameraXform.ry.getAngle()%360);
     this.player.direction = cameraXform.ry.getAngle();
+
+    // If the camera is in an invalid position, move it towards the player until it's in a valid position.
+    if(InputHandler.isKeyDown(KeyCode.O)) camera.setTranslateZ(-30);
+
+    // So this doesn't work, BUT if you also use direction of player,
+    // then we can find if in wall or not. Repeat decreasing Z until we're not in a wall, or the camera's too close.
+    double length = Math.cos(Math.toRadians(cameraXform.rx.getAngle()))*camera.getTranslateZ();
+    // Then each iteration, back out as far as possible again. Inefficient but should work.
+    int cx = (int) ((cameraXform.getTranslateX()+length*Math.sin(Math.toRadians(cameraXform.ry.getAngle())))/10);
+    int cz = (int) ((cameraXform.getTranslateZ()+length*Math.cos(Math.toRadians(cameraXform.ry.getAngle())))/10);
+
+    //GameMain.someBox.setTranslateX( ((cameraXform.getTranslateX()+length*Math.sin(Math.toRadians(cameraXform.ry.getAngle()))) ));
+    //GameMain.someBox.setTranslateZ( ((cameraXform.getTranslateZ()+length*Math.cos(Math.toRadians(cameraXform.ry.getAngle()))) ));
+
+    if(cx < 0 || cz < 0 || GameMain.board[cx][cz] == null)
+    {
+      camera.setTranslateZ(camera.getTranslateZ()+1);
+    }
+    else if (cx > 0 && cz > 0 && GameMain.board[cx][cz] != null && camera.getTranslateZ() > -30 && cameraXform.getTranslateY() < 30)
+    {
+      camera.setTranslateZ(camera.getTranslateZ()-1);
+    }
+
+    //else camera.setTranslateZ(-50);
+
   }
 
 
