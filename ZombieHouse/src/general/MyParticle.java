@@ -33,8 +33,6 @@ public class MyParticle
     double intensity = Math.random();
     this.material = new PhongMaterial(Color.color(0,intensity,intensity));
     this.material.setSelfIlluminationMap(illumination);
-    //this.material.setSpecularColor( Color.WHITE );
-    //his.material.setSpecularPower(0.1);
     this.mesh.setMaterial(this.material);
   }
 

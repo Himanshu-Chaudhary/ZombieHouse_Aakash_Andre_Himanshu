@@ -1,8 +1,8 @@
 package general;
 
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.shape.Shape3D;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import map_generation.Tile;
 import map_generation.ProceduralMap;
 import camera.MyCamera;
@@ -27,15 +27,7 @@ import java.util.Random;
 public class GameMain extends Application
 {
 
-  public int level; // Every level means a new map, reset in player lives, and reset in past selves.
-  public int lives = 5; // Every life means zombies go back to original positions, and player is restored.
-
-  Image image = new Image(getClass().getResourceAsStream("checker_plain_2.jpg"));
-  Image specular = new Image(getClass().getResourceAsStream("checker_specular.jpg"));
-  Image normal = new Image(getClass().getResourceAsStream("checker_normal.jpg"));
-
-  public ArrayList<Integer[]> zombie_spawn_locations = new ArrayList<>();
-
+  private boolean lock = true;
   private static Random random = new Random(0);
   public int exit_x, exit_y;
 
@@ -45,16 +37,19 @@ public class GameMain extends Application
   public static Box[][] board_boxes = new Box[board_size][board_size];
   public static Tile[][] map;
 
-  public Group root = new Group();
+  private Group game_root = new Group();
+  private Group menu_root = new Group();
   PhongMaterial black = new PhongMaterial(Color.BLACK);
   public static MyCamera my_camera;
 
   Player player;
+  private double lives = 5;
   PointLight player_light = new PointLight();
   private boolean dead = false;
 
   ArrayList<Zombie> zombies = new ArrayList<>();
   private static ArrayList<Node[]> zombie_meshes = new ArrayList<>();
+  public ArrayList<Integer[]> zombie_spawn_locations = new ArrayList<>();
 
   ArrayList<MyParticle> particles = new ArrayList<>();
 
@@ -65,29 +60,68 @@ public class GameMain extends Application
 
   @Override public void start( Stage stage )
   {
-    // Add the player.
+    createMainMenu(stage);
+  }
+
+  private void createMainMenu(Stage stage)
+  {
+    //Load stuff for the game before starting up the menu.
     player = new Player();
-    root.getChildren().addAll( player.mesh );
+    game_root.getChildren().addAll( player.mesh );
     player.positionX = 30;
     player.positionY = 5;
     player.positionZ = 30;
 
-    // Add the player's light.
     player_light.setTranslateY(25);
-    root.getChildren().add(player_light);
-
-    // Build the map & board for path finding.
-    map = ProceduralMap.generateMap(board_size, board_size, 2);
+    game_root.getChildren().add(player_light);
     buildBoard();
     spawnZombies();
+    fadeBoard();
 
+    Scene menu = new Scene( menu_root, 1024, 768, true );
+    InputHandler.setUpInputHandler( menu );
+    Text begin = new Text("press space");
+    Text do_not = new Text("don't");
+    begin.setFont(Font.font("Eras Light ITC", 30));
+
+    begin.setTranslateX(400);
+    begin.setTranslateY(384);
+    begin.setFill( Color.WHITE );
+    menu_root.getChildren().add(do_not);
+    do_not.setTranslateX(325);
+    do_not.setTranslateY(384);
+    do_not.setFill( Color.BLACK );
+    do_not.setFont(Font.font("Eras Light ITC", 30));
+    menu_root.getChildren().add(begin);
+
+    Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), ev -> {
+      // Flicker the "don't" in "don't press space".
+      if(random.nextFloat() > 0.9){ do_not.setFill(Color.WHITE); }
+      else { do_not.setFill(Color.BLACK); }
+      if (InputHandler.isKeyDown(KeyCode.SPACE) && lock)
+      {
+        lock = false;
+        createGameScene(stage);
+      }
+      }));
+    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.play();
+
+    menu.setFill( Color.BLACK );
+    menu.setCursor(Cursor.NONE);
+    stage.setScene( menu );
+    stage.show();
+  }
+
+  private void createGameScene( Stage stage )
+  {
     // Try to update every 60th of a second.
     Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), ev -> update()));
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.play();
 
     // Set up & show the scene.
-    Scene scene = new Scene( root, 1024, 768, true );
+    Scene scene = new Scene( game_root, 1024, 768, true );
     InputHandler.setUpInputHandler( scene );
     my_camera = new MyCamera( player );
     scene.setFill(Color.BLACK);
@@ -97,45 +131,24 @@ public class GameMain extends Application
     stage.show();
   }
 
-  private void spawnZombies()
-  {
-    // Spawn the zombies.
-    zombie_spawn_locations.removeAll(zombie_spawn_locations);
-    for(int x = 1; x < board_size-2; x++)
-    {
-      for(int y = 1; y < board_size-2; y++)
-      {
-        if(!map[x][y].isObstacle && !map[x][y].isHallway && !map[x][y].isBorder && !map[x][y].isWall)
-        {
-          if(random.nextFloat() > 0.98)
-          {
-            zombies.add( new Zombie(x*10,5,y*10,player,board));
-            zombies.get(zombies.size()-1).randomWalk = random.nextFloat() > 0.5;
-            zombie_spawn_locations.add(new Integer[] { x*10,5,y*10 } );
-          }
-        }
-      }
-    }
-  }
-
   private void update()
   {
     //Remove player at the start, add 'em at the end.
-    root.getChildren().removeAll(player.mesh);
+    game_root.getChildren().removeAll(player.mesh);
 
     //Fade off from the player.
     fadeBoard();
 
     // Remove all zombie meshes from the root and from our list of meshes.
-    for( Node[] mesh : zombie_meshes ){ root.getChildren().removeAll(mesh); }
+    for( Node[] mesh : zombie_meshes ){ game_root.getChildren().removeAll(mesh); }
     zombie_meshes.removeAll(zombie_meshes);
 
     // Add each zombie's mesh to the root.
     for( Zombie z : zombies ) {
-      if( ! root.getChildren().contains(z.healthbar)) root.getChildren().add(z.healthbar);
+      if( ! game_root.getChildren().contains(z.healthbar)) game_root.getChildren().add(z.healthbar);
       if(z.mesh != null)
       {
-        root.getChildren().addAll(z.mesh);
+        game_root.getChildren().addAll(z.mesh);
         zombie_meshes.add(z.mesh);
       }
     }
@@ -146,10 +159,10 @@ public class GameMain extends Application
     for( MyParticle mp : particles )
     {
       mp.update();
-      if(!root.getChildren().contains(mp.mesh)){ root.getChildren().add(mp.mesh); }
+      if(!game_root.getChildren().contains(mp.mesh)){ game_root.getChildren().add(mp.mesh); }
       else if (mp.y_position<-10)
       {
-        root.getChildren().remove(mp.mesh);
+        game_root.getChildren().remove(mp.mesh);
         remove_list.add(mp);
       }
     }
@@ -174,8 +187,8 @@ public class GameMain extends Application
       // Spawn some particle effects when the zombies die.
       if(zombies.get(i).health <= 0)
       {
-        root.getChildren().remove(zombies.get(i).healthbar);
-        root.getChildren().removeAll(zombies.get(i).mesh);
+        game_root.getChildren().remove(zombies.get(i).healthbar);
+        game_root.getChildren().removeAll(zombies.get(i).mesh);
         for(int p = 0; p < 200; p++){ particles.add( (new MyParticle(zombies.get(i).positionX,15,zombies.get(i).positionZ,
                 random.nextFloat()-0.5,(random.nextFloat()-0.5)*2,random.nextFloat()-0.5) )); }
         zombies.remove(zombies.get(i));
@@ -186,7 +199,7 @@ public class GameMain extends Application
     if(player.health<=0 && !dead)
     {
       dead = true;
-      root.getChildren().removeAll(player.mesh);
+      game_root.getChildren().removeAll(player.mesh);
 //      for(int i = 0; i < 200; i++){ particles.add( (new MyParticle(player.positionX,15,player.positionZ,
 //              random.nextFloat()-0.5,(random.nextFloat()-0.5)*2,random.nextFloat()-0.5) )); }
 
@@ -203,15 +216,15 @@ public class GameMain extends Application
         player.positionZ = 30;
 
         // Remove all current zombies and zombie meshes, then add them all back.
-        for (Zombie z : zombies) { root.getChildren().remove(z.healthbar); }
-        for (Node[] mesh : zombie_meshes) { root.getChildren().removeAll(mesh); }
+        for (Zombie z : zombies) { game_root.getChildren().remove(z.healthbar); }
+        for (Node[] mesh : zombie_meshes) { game_root.getChildren().removeAll(mesh); }
         zombies.removeAll(zombies);
         for (Integer[] l : zombie_spawn_locations) { zombies.add(new Zombie(l[0], l[1], l[2], player, board)); }
         dead = false;
       }
     }
     // If the player isn't dead, then add back the mesh.
-    if(!dead){ root.getChildren().addAll(player.mesh); }
+    if(!dead){ game_root.getChildren().addAll(player.mesh); }
 
 
     // If the exit is reached, restart.
@@ -224,8 +237,8 @@ public class GameMain extends Application
       player.positionY = 5;
       player.positionZ = 30;
 
-      for( Zombie z : zombies ){ root.getChildren().remove(z.healthbar); }
-      for( Node[] mesh : zombie_meshes ){ root.getChildren().removeAll(mesh); }
+      for( Zombie z : zombies ){ game_root.getChildren().remove(z.healthbar); }
+      for( Node[] mesh : zombie_meshes ){ game_root.getChildren().removeAll(mesh); }
       zombies.removeAll(zombies);
       buildBoard();
       spawnZombies();
@@ -242,7 +255,6 @@ public class GameMain extends Application
     player_light.setTranslateZ(player.positionZ);
 
   }
-
   private void fadeBoard()
   {
     double d2e; // To exit
@@ -271,21 +283,48 @@ public class GameMain extends Application
       }
     }
   }
+  private void spawnZombies()
+  {
+    // Spawn the zombies.
+    zombie_spawn_locations.removeAll(zombie_spawn_locations);
+    for(int x = 1; x < board_size-2; x++)
+    {
+      for(int y = 1; y < board_size-2; y++)
+      {
+        if(!map[x][y].isObstacle && !map[x][y].isHallway && !map[x][y].isBorder && !map[x][y].isWall)
+        {
+          if(random.nextFloat() > 0.98)
+          {
+            zombies.add( new Zombie(x*10,5,y*10,player,board));
+            zombies.get(zombies.size()-1).randomWalk = random.nextFloat() > 0.5;
+            zombie_spawn_locations.add(new Integer[] { x*10,5,y*10 } );
+          }
+        }
+      }
+    }
+  }
   private void buildBoard() {
 
+
+    // First wipe out any and all boxes from the last iteration.
     ArrayList<Node> remove_list = new ArrayList<>();
-    for( Node child : root.getChildren() )
+    for( Node child : game_root.getChildren() )
     {
       if(child instanceof Box)
       {
         remove_list.add( child );
       }
     }
-    root.getChildren().removeAll(remove_list);
+    game_root.getChildren().removeAll(remove_list);
 
+    // Generate a new map.
     map = ProceduralMap.generateMap(board_size, board_size, 2);
+
+    // Add the light for the exit.
     PointLight exitLight = new PointLight();
-    root.getChildren().add(exitLight);
+    game_root.getChildren().add(exitLight);
+
+    // Construct the boxes necessary for the new map.
     for(int x = 0; x < map.length; x++)
     {
       for(int y = 0; y < map[0].length; y++)
@@ -297,7 +336,7 @@ public class GameMain extends Application
         board_boxes[x][y].setTranslateX(x*10);
         board_boxes[x][y].setTranslateZ(y*10);
         board_boxes[x][y].setTranslateY(-10);
-        root.getChildren().add(board_boxes[x][y]);
+        game_root.getChildren().add(board_boxes[x][y]);
         board_boxes[x][y].setHeight(10);
         switch (map[x][y].type){
           case wall: {
