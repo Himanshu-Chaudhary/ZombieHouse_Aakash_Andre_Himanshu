@@ -10,7 +10,6 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import jdk.internal.util.xml.impl.Input;
 import map_generation.BoardManager;
 import map_generation.Tile;
 import map_generation.ProceduralMap;
