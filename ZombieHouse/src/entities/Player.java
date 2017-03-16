@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.transform.Rotate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static general.GameMain.board;
@@ -24,18 +25,25 @@ public class Player extends Creature
   private double health_max = 30;
 
   // Timing variables
-  private int frame = 0;
-  private double frame_timer = 0;
-  private double last_update_time = 0;
+  public int frame = 0;
+  public double frame_timer = 0;
+  public double last_update_time = 0;
 
   // State management
-  private String state = "IDLE";
-  private double state_timer = 0;
+  public String state = "IDLE";
+  public double state_timer = 0;
   private int priority = 0;
 
   // Animations & State->Animation map.
-  private ArrayList<Node[]> current_animation;
-  private Map<String,ArrayList<Node[]>> state_to_animation = new HashMap<>();
+  public ArrayList<Node[]> current_animation;
+  public Map<String,ArrayList<Node[]>> state_to_animation = new HashMap<>();
+
+  //pastPlayer
+
+  public List<Double> walkBehaviorsX = new ArrayList<>();
+  public List<Double> walkBehaviorsZ = new ArrayList<>();
+  public List<Double> directionBehaviour = new ArrayList<>();
+  public List<String> stateBehaviors = new ArrayList<>();
 
   public Player()
   {
@@ -51,6 +59,10 @@ public class Player extends Creature
 
   @Override public void update( double time )
   {
+    this.walkBehaviorsX.add(this.positionX);
+    this.walkBehaviorsZ.add(this.positionZ);
+    this.directionBehaviour.add(this.direction);
+    this.stateBehaviors.add(this.state);
     double dt = (time - this.last_update_time)/Math.pow(10,3);
     this.state_timer += dt;
     this.frame_timer += dt;
@@ -77,7 +89,7 @@ public class Player extends Creature
 
     display();
     last_update_time = time;
-
+    System.out.println("Player  Updated");
   }
 
   // STATE MANAGERS
@@ -247,6 +259,8 @@ public class Player extends Creature
     if(this.current_animation == null) { this.current_animation = this.state_to_animation.get("IDLE"); }
     this.mesh = this.current_animation.get(frame % this.current_animation.size());
 
+    System.out.println(this.positionY);
+
     for(Node n : mesh)
     {
       n.setTranslateX(this.positionX);
@@ -257,6 +271,31 @@ public class Player extends Creature
     }
   }
 
+  public void reset()
+  {
+    this.walkBehaviorsX.clear();
+    this.walkBehaviorsZ.clear();
+    this.directionBehaviour.clear();
+    this.stateBehaviors.clear();
+  }
+
+  public List<Double> getWalkBehaviorsZ()
+  {
+    return walkBehaviorsZ;
+  }
+  public List<Double> getWalkBehaviorsX()
+  {
+    return walkBehaviorsX;
+  }
+  public List<String> getStateBehaviors()
+  {
+    return stateBehaviors;
+  }
+
+  public List<Double> getDirectionBehaviour()
+  {
+    return directionBehaviour;
+  }
   // I don't really use these.
   @Override public void setSpeed(double sp)
   {

@@ -16,3 +16,4 @@ public abstract class Entity
   public double direction;
   public Node[] mesh; // Seems reasonable to expect every entity to have a mesh/body.
 }
+

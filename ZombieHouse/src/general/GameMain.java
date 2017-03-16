@@ -1,5 +1,6 @@
 package general;
 
+import entities.PastSelf;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -21,6 +22,8 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import sun.security.krb5.internal.PAData;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -43,6 +46,7 @@ public class GameMain extends Application
   public static MyCamera my_camera;
 
   Player player;
+  ArrayList<PastSelf> pastSelves = new ArrayList<>();
   private double lives = 5;
   PointLight player_light = new PointLight();
   private boolean dead = false;
@@ -135,6 +139,9 @@ public class GameMain extends Application
   {
     //Remove player at the start, add 'em at the end.
     game_root.getChildren().removeAll(player.mesh);
+    for (PastSelf p : pastSelves){
+      game_root.getChildren().removeAll(p.mesh);
+    }
 
     //Fade off from the player.
     fadeBoard();
@@ -174,6 +181,9 @@ public class GameMain extends Application
     // Update the player.
     double time = System.currentTimeMillis();
     player.update(time);
+    for (PastSelf p : pastSelves){
+      p.update(time);
+    }
 
     if(InputHandler.isKeyDown(KeyCode.SHIFT))
       particles.add( (new MyParticle(player.positionX+(Math.random()-0.5)*3,7+(Math.random()-0.5)*10,player.positionZ+(Math.random()-0.5)*3,
@@ -199,7 +209,14 @@ public class GameMain extends Application
     if(player.health<=0 && !dead)
     {
       dead = true;
+      PastSelf temp = (new PastSelf(player.getWalkBehaviorsX(),player.getWalkBehaviorsZ(),player.getStateBehaviors(),player.getDirectionBehaviour()));
+
+      pastSelves.add(temp);
       game_root.getChildren().removeAll(player.mesh);
+      for (PastSelf p : pastSelves){
+        game_root.getChildren().removeAll(p.mesh);
+      }
+
 //      for(int i = 0; i < 200; i++){ particles.add( (new MyParticle(player.positionX,15,player.positionZ,
 //              random.nextFloat()-0.5,(random.nextFloat()-0.5)*2,random.nextFloat()-0.5) )); }
 
@@ -214,7 +231,7 @@ public class GameMain extends Application
         player.positionX = 30;
         player.positionY = 5;
         player.positionZ = 30;
-
+        player.reset();
         // Remove all current zombies and zombie meshes, then add them all back.
         for (Zombie z : zombies) { game_root.getChildren().remove(z.healthbar); }
         for (Node[] mesh : zombie_meshes) { game_root.getChildren().removeAll(mesh); }
@@ -224,7 +241,10 @@ public class GameMain extends Application
       }
     }
     // If the player isn't dead, then add back the mesh.
-    if(!dead){ game_root.getChildren().addAll(player.mesh); }
+    if(!dead){ game_root.getChildren().addAll(player.mesh);
+      for (PastSelf p : pastSelves){
+        game_root.getChildren().addAll(p.mesh);
+      }}
 
 
     // If the exit is reached, restart.
