@@ -1,262 +1,210 @@
 package entities;
 
-import pathfinding.PathNode;
-import pathfinding.Pathfinding;
+import general.GameMain;
 import input.InputHandler;
-import general.*;
-import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.Shape3D;
-import javafx.scene.transform.Rotate;
+import javafx.scene.shape.MeshView;
+import pathfinding.PathNode;
+import pathfinding.Pathfinding;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
-public class Zombie extends Creature
+public class Zombie extends Entity
 {
+  private double decision_timer;
+  private int smell_range;
+  private boolean isLineWalkZombie;
+  public Integer[] position_start;
+  public Box healthbar;
+  private PhongMaterial healthbar_material;
+  private Entity target;
 
-  PhongMaterial body_material;
-  PhongMaterial healthbar_material;
-
-  // Attributes everyone wants.
-  private Player player;
-  private PathNode[][] board;
-
-  private int frame = 0;
-  private double frame_timer = 0;
-
-  // Attributes for ourselves.
-  private int smellRange = 20;
-  private int max_health = 30;
-  private double default_speed = 1.0;
-  public boolean randomWalk;
-
-  // State & Priority
-  private String state = "IDLE";
-  private double state_timer = 0;
-  private int priority = 0;
-
-  // Animations, and the mapping for state to animation.
-  private ArrayList<Node[]> current_animation;
-  private Map<String,ArrayList<Node[]>> state_to_animation = new HashMap<>();
-  public Box healthbar = new Box(3,3,3);
-
-  private double last_update_time = 0;
-  private double last_direction_update = 0;
-
-  public Zombie ( int x, int y, int z, Player player, PathNode[][] board )
+  public Zombie( int x, int y, int z )
   {
-    this.body_material = new PhongMaterial(Color.BLUE);
-    this.healthbar_material = new PhongMaterial(Color.RED);
+    super.name = "PLAYER";
+    super.state = "RUN";
+    super.priority = 0;
 
-    this.positionX = x;
-    this.positionY = y;
-    this.positionZ = z;
-    this.player = player;
-    this.board = board;
+    super.state_timer = System.currentTimeMillis();
+    super.frame_timer = super.state_timer;
+    super.update_timer = super.frame_timer;
+    this.decision_timer = super.update_timer;
 
-    this.health = max_health;
-    this.speed = default_speed;
+    super.health = 30;
+    super.damage = 10;
+    super.speed = 1.00;
+    this.smell_range = 10;
+    this.isLineWalkZombie = Math.random() > 0.5;
 
-    // Import our meshes, and transform them as appropriate for this type of object.
-    this.state_to_animation.put("WALKING", MeshManager.getAnimation("ZombieHouse/src/Meshes/Zombie_Run/run", 12));
-    this.state_to_animation.put("IDLE", MeshManager.getAnimation("ZombieHouse/src/Meshes/Zombie_Idle/idle", 1));
-    this.state_to_animation.put("ATTACKING", MeshManager.getAnimation("ZombieHouse/src/Meshes/Zombie_Attack/attack",10));
-    for( ArrayList<Node[]> animation : this.state_to_animation.values()){ animationTransform(animation); }
+    this.healthbar = new Box(5,5,5);
+    this.healthbar.setTranslateY(20);
+    this.healthbar_material = new PhongMaterial( Color.WHITE );
+    this.healthbar.setMaterial( this.healthbar_material );
+    GameMain.game_root.getChildren().add( this.healthbar );
 
+    super.direction = 0;
+    super.position_x = x;
+    super.position_y = y;
+    super.position_z = z;
+    this.position_start = new Integer[]{x,y,z};
 
-  }
-
-  public void animationTransform( ArrayList<Node[]> a )
-  {
-    for(int i = 0; i < a.size(); i++) { meshTransform(a.get(i)); }
-  }
-
-  public void meshTransform ( Node[] m )
-  {
-    for(int i = 0;i< m.length;i++)
-    {
-      m[i].setScaleX(6);
-      m[i].setScaleY(-6);
-      m[i].setScaleZ(6);
-    }
-  }
-
-  public void proposeState( String state_name, int new_priority, int override_priority)
-  {
-    if( state_name.equals(this.state)) return;
-    if( override_priority > this.priority )
-    {
-      this.priority = new_priority;
-      this.state = state_name;
-      this.state_timer = 0;
-      this.frame = 0;
-    }
+    super.material = new PhongMaterial( Color.RED );
+    super.meshview = new MeshView();
+    super.meshview.setMesh( null );
   }
 
   @Override
   public void update(double time)
   {
-    double dt = (time-this.last_update_time)/Math.pow(10,3);
-    this.state_timer += dt;
 
-    // Move along the frames at a solid pace.
-    frame_timer += dt;
-    if(frame_timer > 0.04)
+    /* Return prematurely if we're dead.
+    I don't just remove from zombies, because when I restart the level on death the way it's set up right now
+    makes removing each zombie early a pain in the rear. Cutting it off here reduces most of the processing cost
+    anyhow so it's probably fine. */
+    if( super.health <= 0 ){ return; }
+
+    double dt_ms = time - super.update_timer;
+    this.decision_timer += dt_ms;
+    super.state_timer += dt_ms;
+
+    String state_backup = super.state;
+
+    instigateAttack();
+    if( this.decision_timer > 2000 ) updateDirection();
+
+    if(!state_backup.equals( super.state ))
     {
-      frame = (frame + 1) % 12;
-      frame_timer = 0;
+      super.frame = 0;
+      super.frame_timer = 0;
+      super.state_timer = 0;
     }
 
-    // If we've waited long enough for an update, then update the direction.
-    if( (time-this.last_direction_update)/Math.pow(10,3) > 1 && (this.state.equals("IDLE") || this.state.equals("WALKING")) )
-    {
-      this.last_direction_update = time;
-      this.proposeState("WALKING", 0, 1);
-      if ( this.randomWalk ) this.direction = Math.random()*360;
-      if ( !this.randomWalk && this.speed == 0) this.direction = Math.random()*360;
-      this.setSpeed(default_speed);
-      this.updateDirection();
-    }
-    this.walk(); // Move in the direction given, but collide with walls.
-    this.attack(); // Always call attack - it can occur in-between decisions on direction.
-    this.display(); // Update the mesh to match the model.
+    double d = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
+    d = d>100? 0 : 1-d/100;
+    this.material.setDiffuseColor( Color.color(d,0,0));
+    this.healthbar_material.setDiffuseColor( Color.color(d,d,d));
+    super.display( dt_ms );
+    this.drawHealthbar( );
+    if( super.state.equals("RUN") ) { run(dt_ms); }
+    if( super.state.equals("ATTACK")) { attack( dt_ms ); }
 
-    this.last_update_time = time;
+    super.update_timer = time;
   }
 
-  @Override
-  public void display()
+
+  private void drawHealthbar()
   {
-    this.healthbar.setTranslateX(this.positionX);
-    this.healthbar.setTranslateY(this.positionY+15);
-    this.healthbar.setTranslateZ(this.positionZ);
-    this.healthbar.setRotationAxis(Rotate.Y_AXIS);
-    this.healthbar.setRotate(90-this.direction);
-    this.healthbar.setHeight(this.health/10);
-
-    // Set animation to that specified by our state.
-    this.current_animation = this.state_to_animation.get(this.state);
-    if(this.current_animation == null) { this.current_animation = this.state_to_animation.get("IDLE"); }
-    this.mesh = this.current_animation.get(frame % this.current_animation.size());
-
-    // Transform mesh to match our position.
-    double dist = Math.sqrt(Math.pow(this.positionX-player.positionX,2)+Math.pow(this.positionX-player.positionX,2));
-    dist/=20;
-    if(dist > 1) dist = 1;
-    dist = 1-dist;
-    body_material = new PhongMaterial(Color.color(dist,dist,dist));
-    healthbar_material = new PhongMaterial(Color.color(dist,0,0));
-    healthbar.setMaterial(healthbar_material);
-    for(Node n : mesh)
-    {
-      ((Shape3D) n).setMaterial(body_material);
-      n.setTranslateX(this.positionX);
-      n.setTranslateY(this.positionY);
-      n.setTranslateZ(this.positionZ);
-      n.setRotationAxis(Rotate.Y_AXIS);
-      n.setRotate(90-this.direction);
-    }
+    this.healthbar.setTranslateX( super.position_x );
+    this.healthbar.setTranslateZ( super.position_z );
+    this.healthbar.setHeight(this.health/6);
   }
 
-  public void attack()
+  // Points towards the closest player on the list, I hope.
+  private void updateDirection()
   {
-    double distanceToPlayer = Math.sqrt( Math.pow(this.positionX-player.positionX,2) + Math.pow(this.positionZ-player.positionZ,2));
-    if(distanceToPlayer < 20 && InputHandler.isKeyDown(KeyCode.SPACE)) { this.health -= 1; }
-    if( distanceToPlayer < 12 && this.speed != 0)
+    this.decision_timer = 0;
+    this.proposeState("RUN", 0, 1);
+    super.speed = 0.5;
+    if ( this.isLineWalkZombie && this.speed == 0){ this.direction = Math.random()*360; }
+    else if ( !this.isLineWalkZombie ){ this.direction = Math.random()*360; }
+
+    PathNode myNode, playerNode, temp_node;
+    Map<PathNode,PathNode> path;
+    int best_length = Integer.MAX_VALUE;
+    int path_length;
+    double dy, dx;
+
+    for( Entity p : GameMain.players )
     {
-      double dy = this.positionZ - player.positionZ;
-      double dx = this.positionX - player.positionX;
-      this.direction = Math.toDegrees(Math.atan2(dy, dx));
-      this.proposeState("ATTACKING", 1, 2);
-      setSpeed(0);
-    }
-    if( this.state.equals("ATTACKING") && this.state_timer > 0.3) // If the player's in range and we're still attacking,
-                                                                // then deal some damage to the player.
-    {
-      if( distanceToPlayer < 12 )
+      myNode = GameMain.path_nodes[ (int) ((super.position_x+5)/10.0) ][ (int) ((super.position_z+5)/10.0) ];
+      playerNode = GameMain.path_nodes[ (int) ((p.position_x+5)/10) ][ (int) ((p.position_z+5)/10) ];
+      path = Pathfinding.getPath( GameMain.path_nodes, playerNode, myNode );
+
+      path_length = 0;
+      temp_node = myNode;
+
+      while(temp_node != null && path != null)
       {
-        player.setHealth(player.health-5);
+        temp_node = path.get(temp_node);
+        path_length++;
       }
-      this.proposeState("IDLE",0,2);
+
+      if( path_length > 1 && path_length < this.smell_range && super.position_x - ((int) ((super.position_x+5)/10.0))*10 <= 5 &&
+              super.position_z - ((int) ((super.position_z+5)/10.0))*10 <= 5 && path_length < best_length)
+      {
+        // ... then move towards the targeted path node.
+        best_length = path_length;
+        dx = super.position_z - path.get(myNode).y * 10;
+        dy = super.position_x - path.get(myNode).x * 10;
+        super.direction = Math.toDegrees(Math.atan2(dy, dx));
+      }
     }
+
   }
 
-  public void updateDirection()
-  {
-    // Find the path from the player to us.
-    PathNode myNode = this.board[ (int) ((this.positionX+5)/10.0) ][ (int) ((this.positionZ+5)/10.0) ];
-    PathNode playerNode = this.board[ (int) ((this.player.positionX+5)/10) ][ (int) ((this.player.positionZ+5)/10) ];
-    Map<PathNode,PathNode> path = Pathfinding.getPath( this.board, playerNode, myNode );
-
-    // Figure out the length of the path.
-    int path_length = 0;
-    PathNode temp_node = myNode;
-    while(temp_node != null && path != null)
+  private void instigateAttack() {
+    // Pick the closest player and try to attack it.
+    double dist;
+    double min_dist = 999;
+    target = null;
+    for( Entity p : GameMain.players )
     {
-      temp_node = path.get(temp_node);
-      path_length++;
+      dist = Math.sqrt( Math.pow(p.position_x-super.position_x,2)+Math.pow(p.position_z-super.position_z,2));
+      if( dist < min_dist )
+      {
+        min_dist = dist;
+        target = p;
+      }
+    }
+    if( target != null && min_dist < 25 )
+    {
+      this.proposeState("ATTACK", 1, 1);
+      //super.direction = Math.toDegrees(Math.atan2( target.position_z-super.position_z, target.position_x-super.position_x ));
     }
 
-    // If we're not too far or too close, and we're adequately close to the center of a square, point at the player.
-    if( path_length > 1 && path_length < this.smellRange && this.positionX - ((int) ((this.positionX+5)/10.0))*10 <= 5 &&
-            this.positionZ - ((int) ((this.positionZ+5)/10.0))*10 <= 5)
-    {
-      // ... then move towards the targeted path node.
-      double dy = this.positionZ - path.get(myNode).y * 10;
-      double dx = this.positionX - path.get(myNode).x * 10;
-      this.direction = Math.toDegrees(Math.atan2(dy, dx));
-    }
   }
 
-  public void walk()
+  private void attack(double dt)
   {
-    double x_component = -Math.cos( Math.toRadians(this.direction));
-    double z_component = -Math.sin( Math.toRadians(this.direction));
+    super.direction = Math.toDegrees(Math.atan2( super.position_x-target.position_x, super.position_z-target.position_z));
+    if( super.state_timer < 400 )
+    {
+      // We only damage the player, because we don't care about past player's health.
+      double distance = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
+      if( distance < 20 )
+      {
+        GameMain.player.health -= 0.5;
+      }
+    }
+    if( super.state_timer > 600) // 600 ms for attack to complete.
+    {
+      super.proposeState("IDLE", 0, 2);
+    }
+  }
+  private void run(double dt)
+  {
+    double z_component = -Math.cos( Math.toRadians(this.direction));
+    double x_component = -Math.sin( Math.toRadians(this.direction));
 
     //Stop walking if we're going to clip into a wall.
-    int bx = (int) (((this.positionX+5)/10.0) + x_component);
-    int by = (int) (((this.positionZ+5)/10.0) + z_component);
-    if(bx < GameMain.board_size && by < GameMain.board_size && GameMain.board[bx][by] == null)
+    int bx = (int) (((super.position_x+5)/10.0) + x_component);
+    int by = (int) (((super.position_z+5)/10.0) + z_component);
+    if(bx < GameMain.board_size && by < GameMain.board_size && GameMain.path_nodes[bx][by] == null)
     {
-      this.setSpeed(0);
-      this.proposeState("IDLE", 0, 1);
+      super.speed = 0;
+      super.proposeState("IDLE", 0, 1);
     }
     else // Otherwise keep on walking forwards.
     {
-      this.positionX += x_component*this.speed;
-      this.positionZ += z_component*this.speed;
+      super.position_x += x_component*super.speed;
+      super.position_z += z_component*super.speed;
     }
   }
 
-// --- I don't really use these much. Why not just reference the variables directly?
 
-  @Override
-  public void setSpeed(double sp)
-  {
-    this.speed = sp;
-  }
-
-  @Override
-  public void setDamage(double dm)
-  {
-    this.damage = dm;
-  }
-
-  @Override
-  public void setStepDistance(double sDis)
-  {
-    this.stepDistance = sDis;
-  }
-
-  @Override
-  public void setHealth(double heal)
-  {
-    this.health = heal;
-  }
 
 }

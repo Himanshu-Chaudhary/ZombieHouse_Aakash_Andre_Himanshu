@@ -1,8 +1,6 @@
 package camera;
 
-import general.GameMain;
 import input.InputHandler;
-import entities.Player;
 import general.Xform;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.input.KeyCode;
@@ -13,14 +11,12 @@ public class MyCamera
   public final Xform cameraXform = new Xform();
   final Xform cameraXform2 = new Xform();
   final Xform cameraXform3 = new Xform();
-  private static final double CAMERA_INITIAL_DISTANCE = -25;
-  private static final double CAMERA_INITIAL_X_ANGLE = 30.0;
+  private static final double CAMERA_INITIAL_DISTANCE = -23;
+  private static final double CAMERA_INITIAL_X_ANGLE = 80;
   private static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
-  private static final double CAMERA_NEAR_CLIP = 5;
-  private static final double CAMERA_FAR_CLIP = 400.0;
+  private static final double CAMERA_NEAR_CLIP = 2;
+  private static final double CAMERA_FAR_CLIP = 400;
   private double my_drift_copy;
-
-  Player player;
 
   public void update()
   {
@@ -33,43 +29,16 @@ public class MyCamera
         cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 0.1 *InputHandler.getMouseDY());
     }
     cameraXform.ry.setAngle(cameraXform.ry.getAngle()%360);
-    this.player.direction = cameraXform.ry.getAngle();
-
-    // If the camera is in an invalid position, move it towards the player until it's in a valid position.
-    if(InputHandler.isKeyDown(KeyCode.O)) camera.setTranslateZ(-30);
-
-    // So this doesn't work, BUT if you also use direction of player,
-    // then we can find if in wall or not. Repeat decreasing Z until we're not in a wall, or the camera's too close.
-    double length = Math.cos(Math.toRadians(cameraXform.rx.getAngle()))*camera.getTranslateZ() + 0.5; // increase smidge,
-                                                                                              //we're still clipping walls.
-    // Then each iteration, back out as far as possible again. Inefficient but should work.
-    int cx = (int) ((cameraXform.getTranslateX()+length*Math.sin(Math.toRadians(cameraXform.ry.getAngle())))/10);
-    int cz = (int) ((cameraXform.getTranslateZ()+length*Math.cos(Math.toRadians(cameraXform.ry.getAngle())))/10);
-
-    int cx2 = (int) ((cameraXform.getTranslateX()+(length+1)*Math.sin(Math.toRadians(cameraXform.ry.getAngle())))/10);
-    int cz2 = (int) ((cameraXform.getTranslateZ()+(length+1)*Math.cos(Math.toRadians(cameraXform.ry.getAngle())))/10);
-
-    if(cx < 0 || cz < 0 || GameMain.board[cx][cz] == null)
-    {
-      camera.setTranslateZ(camera.getTranslateZ()+1);
-    }
-    if (cx2 > 0 && cz2 > 0 && GameMain.board[cx2][cz2] != null && camera.getTranslateZ() > -30 && cameraXform.getTranslateY() < 30)
-    {
-      camera.setTranslateZ(camera.getTranslateZ()-1);
-    }
 
   }
 
-
-
-  public MyCamera(Player player)
+  public MyCamera()
   {
-    this.player = player;
     cameraXform.getChildren().add(cameraXform2);
     cameraXform2.getChildren().add(cameraXform3);
     cameraXform3.getChildren().add(camera);
     cameraXform3.setRotateZ(180.0);
-    cameraXform.setTranslateY(10);
+    cameraXform.setTranslateY(13);
 
     camera.setFieldOfView(70);
     camera.setNearClip(CAMERA_NEAR_CLIP);
