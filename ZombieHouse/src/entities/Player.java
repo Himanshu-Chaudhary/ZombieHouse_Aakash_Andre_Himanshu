@@ -89,7 +89,7 @@ public class Player extends Creature
 
     display();
     last_update_time = time;
-    System.out.println("Player  Updated");
+
   }
 
   // STATE MANAGERS

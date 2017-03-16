@@ -61,7 +61,7 @@ public class PastSelf extends Player{
       last_update_time = time;
     }
     currentStep++;
-    System.out.println("PasstSelf Updated");
+
   }
 
   }
