@@ -120,6 +120,9 @@ public class Zombie extends Entity
 
     for( Entity p : GameMain.players )
     {
+      double dist = Math.sqrt( Math.pow(p.position_x-super.position_x,2)+Math.pow(p.position_z-super.position_z,2));
+      if(dist > 200){ return; } // Don't bother searching for the player if we're too far away anyway.
+
       myNode = GameMain.path_nodes[ (int) ((super.position_x+5)/10.0) ][ (int) ((super.position_z+5)/10.0) ];
       playerNode = GameMain.path_nodes[ (int) ((p.position_x+5)/10) ][ (int) ((p.position_z+5)/10) ];
       path = Pathfinding.getPath( GameMain.path_nodes, playerNode, myNode );

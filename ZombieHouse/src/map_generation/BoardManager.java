@@ -2,10 +2,15 @@ package map_generation;
 
 import general.GameMain;
 import general.MaterialsManager;
+import general.MeshManager;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Mesh;
+import javafx.scene.shape.MeshView;
 import pathfinding.PathNode;
 
 import java.util.ArrayList;
@@ -27,7 +32,7 @@ public class BoardManager
     }
   }
 
-  public static void addBoxes( Box[][][] board_boxes, Tile[][] map, Group group )
+  public static void addMapMeshes(Box[][][] board_boxes, Tile[][] map, Group group )
   {
     PhongMaterial temp_material;
     for(int x = 0; x < map.length; x++)
@@ -53,7 +58,7 @@ public class BoardManager
           GameMain.exit_x = x*10;
           GameMain.exit_z = y*10;
         }
-        else if( map[x][y].isWall )
+        else if( map[x][y].isWall && !map[x][y].isObstacle )
         {
           // Set the wall to a material based on that of the wall material for this region.
           // [ The reason for the separate materials (new materials for each) is for our smooth FoW effect. ]
@@ -85,16 +90,37 @@ public class BoardManager
           temp_material.setBumpMap( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getBumpMap() );
 
           board_boxes[1][x][y].setMaterial( temp_material );
+
+          if( map[x][y].isObstacle )
+          {
+            MeshView pillar = new MeshView();
+            pillar.setMesh( MeshManager.getMesh("tex_tall_spike") );
+            pillar.setScaleX(3);
+            pillar.setScaleY(-3);
+            pillar.setScaleZ(3);
+            pillar.setTranslateX(x*10);
+            pillar.setTranslateZ(y*10);
+            pillar.setTranslateY(28);
+            pillar.setMaterial( new PhongMaterial(Color.GRAY, new Image("File:ZombieHouse/src/images/white_brick.jpg", 128, 128, true, true, true), null, null, null));
+            GameMain.game_root.getChildren().add(pillar);
+          }
+
         }
       }
     }
   }
 
-  public static void removeAllBoxes( Group group )
+  public static void removeMapMeshes(Group group )
   {
     ArrayList<Node> remove_list = new ArrayList<>();
     List<Node> groupChildren = group.getChildren();
-    for( Node child :  groupChildren ){ if(child instanceof Box){ remove_list.add( child ); }}
+    for( Node child :  groupChildren )
+    {
+      if(child instanceof Box || (child instanceof MeshView &&  ((MeshView) child).getMesh() == MeshManager.getMesh("tex_tall_spike")) ) // || ((MeshView) child).getMesh() == MeshManager.getMesh("tex_tall_spike"))
+      {
+        remove_list.add( child );
+      }
+    }
     group.getChildren().removeAll(remove_list);
   }
 }

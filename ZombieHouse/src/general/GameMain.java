@@ -98,8 +98,8 @@ public class GameMain extends Application
 
     // Configure the map for our game, including appearance and path-finding.
     map = ProceduralMap.generateMap( board_size, board_size, 1 );
-    BoardManager.removeAllBoxes( game_root );
-    BoardManager.addBoxes( board_boxes, map, game_root );
+    BoardManager.removeMapMeshes( game_root );
+    BoardManager.addMapMeshes( board_boxes, map, game_root );
     BoardManager.configurePathNodes( map, path_nodes );
 
     player = new Player(20,40,20);
@@ -239,6 +239,7 @@ public class GameMain extends Application
   }
   private void exitReached()
   {
+    //game_root.getChildren().removeAll(game_root.getChildren());
     // Remove all zombies.
     for (Zombie z : zombies)
     {
@@ -254,8 +255,8 @@ public class GameMain extends Application
 
     // Create a new map.
     map = ProceduralMap.generateMap( board_size, board_size, 1 );
-    BoardManager.removeAllBoxes( game_root );
-    BoardManager.addBoxes( board_boxes, map, game_root );
+    BoardManager.removeMapMeshes( game_root );
+    BoardManager.addMapMeshes( board_boxes, map, game_root );
     BoardManager.configurePathNodes( map, path_nodes );
 
     // Create a fresh player.

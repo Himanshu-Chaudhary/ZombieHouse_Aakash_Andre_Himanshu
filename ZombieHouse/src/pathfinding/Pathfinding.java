@@ -85,7 +85,7 @@ public class Pathfinding
                 if( !came_from.containsKey(neighbors.get(i)) || new_cost < cost_so_far.get(neighbors.get(i)))
                 {
                     cost_so_far.put(neighbors.get(i),new_cost);
-                    neighbors.get(i).priority = new_cost;
+                    neighbors.get(i).priority = new_cost + heuristic(end_position,neighbors.get(i));
                     frontier.add(neighbors.get(i));
                     came_from.put(neighbors.get(i),current);
                 }
@@ -93,6 +93,11 @@ public class Pathfinding
 
         }
         return came_from;
+    }
+
+    private static double heuristic( PathNode a, PathNode b )
+    {
+        return( Math.abs(a.x-b.x)+Math.abs(a.y-b.y));
     }
 
 
