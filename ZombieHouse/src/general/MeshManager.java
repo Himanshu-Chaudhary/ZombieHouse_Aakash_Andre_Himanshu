@@ -3,7 +3,11 @@ package general;
 import com.interactivemesh.jfx.importer.obj.ObjImportOption;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import entities.Entity;
+import javafx.scene.Node;
+import javafx.scene.paint.Material;
 import javafx.scene.shape.Mesh;
+import javafx.scene.shape.MeshView;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,9 +46,26 @@ public class MeshManager
     // Add the quick reference import here so we don't import a million times over.
     if( meshes.containsKey(name) ){ return meshes.get(name); }
     importer.read("ZombieHouse/src/meshes/"+name+".obj");
-    Mesh mesh = importer.getImport()[0].getMesh();
+    Node[] temp = importer.getImport();
+
+
+    Mesh mesh = ((MeshView)temp[0]).getMesh();
+    System.out.println(" " + ((MeshView) temp[0]).getMaterial());
+
     meshes.put( name, mesh );
     return mesh;
   }
+
+  public static Material getMaterial(String name )
+  {
+    // Add the quick reference import here so we don't import a million times over.
+    importer.read("ZombieHouse/src/meshes/"+name+".obj");
+    Node[] temp = importer.getImport();
+
+    Mesh mesh = ((MeshView)temp[0]).getMesh();
+    return ((MeshView) temp[0]).getMaterial();
+  }
+
+
 
 }

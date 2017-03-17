@@ -97,7 +97,8 @@ public class Pathfinding
 
     private static double heuristic( PathNode a, PathNode b )
     {
-        return( Math.abs(a.x-b.x)+Math.abs(a.y-b.y));
+      if( a == null || b == null) return 0;
+      else return( Math.abs(a.x-b.x)+Math.abs(a.y-b.y));
     }
 
 

@@ -203,7 +203,7 @@ public class GameMain extends Application
 
     light.setTranslateX( player.position_x - 2* Math.sin( Math.toRadians( player.direction )));
     light.setTranslateZ( player.position_z - 2* Math.cos( Math.toRadians( player.direction )));
-    light.setColor( Color.color(0.5,0.5,0.5) );
+    light.setColor( Color.color(0.9,0.9,0.9) );
   }
 
   private void playerDied()
