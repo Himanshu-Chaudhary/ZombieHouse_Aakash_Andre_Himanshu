@@ -6,6 +6,56 @@ import javafx.scene.paint.PhongMaterial;
 
 public class MaterialsManager
 {
+  // Admittedly this wastes space by importing healthbar images twice.
+  public static final PhongMaterial[] HEALTHBAR_MATERIALS = new PhongMaterial[]
+          {
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_1.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_1.png")),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_2.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_2.png")),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_3.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_3.png")),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_4.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_4.png")),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_5.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/healthbar_5.png"))
+          };
+
+  public static final PhongMaterial[] PLAYER_HEALTHBAR_MATERIALS = new PhongMaterial[]
+          {
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_1.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_1.png")),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_2.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_2.png")),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_3.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_3.png")),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_4.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_4.png")),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_5.png"), null, null,
+                          new Image("File:ZombieHouse/src/meshes/phealthbar_5.png"))
+          };
+
+
   public static final PhongMaterial[] FLOOR_MATERIALS = new PhongMaterial[]
           {
                   new PhongMaterial( Color.WHITE,

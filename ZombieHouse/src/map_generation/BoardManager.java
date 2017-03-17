@@ -131,14 +131,14 @@ public class BoardManager
           }
 
           // Rotate as needed for each mesh.
-          if( above && below ){ /* No rotation. */ }
+          if( above && below ){} // No rotation
           else if( left && right){ wall.setRotate( 90 ); }
-          else if( above && !below && !left && !right){ /* No rotation. */ }
+          else if( above && !below && !left && !right){} // No rotation.
           else if( below && !above && !left && !right){ wall.setRotate( 180 ); }
           else if( left && !above && !below && !right){ wall.setRotate( 90 ); }
           else if( right && !below && !left && !above){ wall.setRotate( 270 ); }
           else if( left && below ){ wall.setRotate(180); }
-          else if ( right && above ){ /*No rotation. */ }
+          else if ( right && above ){ } // No rotation
           else if ( left && above ){ wall.setRotate(90);}
           else if ( right && below ){ wall.setRotate(270);}
 
@@ -151,8 +151,6 @@ public class BoardManager
           temp_material.setBumpMap( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getBumpMap() );
 
           board_boxes[1][x][y].setMaterial( temp_material );
-
-
         }
         else
         {

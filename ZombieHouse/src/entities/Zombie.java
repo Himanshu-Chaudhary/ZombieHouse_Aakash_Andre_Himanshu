@@ -1,12 +1,17 @@
 package entities;
 
 import general.GameMain;
+import general.MaterialsManager;
+import general.MeshManager;
 import input.InputHandler;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
+import javafx.scene.transform.Rotate;
 import pathfinding.PathNode;
 import pathfinding.Pathfinding;
 
@@ -19,8 +24,7 @@ public class Zombie extends Entity
   private int smell_range;
   private boolean isLineWalkZombie;
   public Integer[] position_start;
-  public Box healthbar;
-  private PhongMaterial healthbar_material;
+  public MeshView healthbar;
   private Entity target;
 
   public Zombie( int x, int y, int z )
@@ -40,10 +44,14 @@ public class Zombie extends Entity
     this.smell_range = 10;
     this.isLineWalkZombie = Math.random() > 0.5;
 
-    this.healthbar = new Box(5,5,5);
-    this.healthbar.setTranslateY(20);
-    this.healthbar_material = new PhongMaterial( Color.WHITE );
-    this.healthbar.setMaterial( this.healthbar_material );
+    this.healthbar = new MeshView();
+    this.healthbar.setMesh(MeshManager.getMesh("HealthPentagon"));
+    this.healthbar.setTranslateY(-4.2);
+    this.healthbar.setScaleX(3);
+    this.healthbar.setScaleZ(3);
+    this.healthbar.setScaleY(3);
+    this.healthbar.setMaterial( new PhongMaterial(Color.BLACK));
+
     GameMain.game_root.getChildren().add( this.healthbar );
 
     super.direction = 0;
@@ -86,7 +94,7 @@ public class Zombie extends Entity
     double d = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
     d = d>100? 0 : 1-d/100;
     this.material.setDiffuseColor( Color.color(d,0,0));
-    this.healthbar_material.setDiffuseColor( Color.color(d,d,d));
+    ((PhongMaterial) this.healthbar.getMaterial()).setDiffuseColor( Color.color(d,d,d));
     super.display( dt_ms );
     this.drawHealthbar( );
     if( super.state.equals("RUN") ) { run(dt_ms); }
@@ -100,7 +108,10 @@ public class Zombie extends Entity
   {
     this.healthbar.setTranslateX( super.position_x );
     this.healthbar.setTranslateZ( super.position_z );
-    this.healthbar.setHeight(this.health/6);
+    this.healthbar.setRotationAxis(Rotate.Y_AXIS );
+    this.healthbar.setRotate( super.direction+180 );
+    this.healthbar.setMaterial(MaterialsManager.HEALTHBAR_MATERIALS[ (int) (super.health/7.5) ]);
+
   }
 
   // Points towards the closest player on the list, I hope.
@@ -121,7 +132,7 @@ public class Zombie extends Entity
     for( Entity p : GameMain.players )
     {
       double dist = Math.sqrt( Math.pow(p.position_x-super.position_x,2)+Math.pow(p.position_z-super.position_z,2));
-      if(dist > 200){ return; } // Don't bother searching for the player if we're too far away anyway.
+      //if(dist > 200){ continue; } // Don't bother searching for the player if we're too far away anyway.
 
       myNode = GameMain.path_nodes[ (int) ((super.position_x+5)/10.0) ][ (int) ((super.position_z+5)/10.0) ];
       playerNode = GameMain.path_nodes[ (int) ((p.position_x+5)/10) ][ (int) ((p.position_z+5)/10) ];

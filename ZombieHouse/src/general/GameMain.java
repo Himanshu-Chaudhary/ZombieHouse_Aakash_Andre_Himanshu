@@ -5,11 +5,19 @@ import entities.PastSelf;
 import entities.Zombie;
 import entities.Player;
 import camera.MyCamera;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import map_generation.BoardManager;
 import map_generation.Tile;
 import map_generation.ProceduralMap;
@@ -123,7 +131,7 @@ public class GameMain extends Application
       for(int y = 0; y < board_size-1; y++)
       {
         if(map[x][y].isWall || map[x][y].isHallway || map[x][y].isBorder || map[x][y].isObstacle){}
-        else if (Math.random() > 0.95){ zombies.add( new Zombie(x*10,40,y*10)); }
+        else if (Math.random() > 0.98){ zombies.add( new Zombie(x*10,40,y*10)); }
       }
     }
   }
@@ -151,7 +159,7 @@ public class GameMain extends Application
           d = d/100;
           if ( d > 1) d = 1;
           d = 1-d;
-          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setDiffuseColor( Color.color(d,d/1.2,d/1.2) );
+          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setDiffuseColor( Color.color(d,d,d) );
           ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setSpecularColor( Color.color(d,d,d/1.2) );
           if( board_boxes[1][x][y] != null && board_boxes[1][x][y].getMaterial() != null)
           {
@@ -222,6 +230,7 @@ public class GameMain extends Application
     for( Integer[] sp : start_positions ){ zombies.add( new Zombie(sp[0], sp[1], sp[2] )); }
 
     for( Entity p : players ){ game_root.getChildren().remove( p.meshview ); }
+    game_root.getChildren().remove( player.healthbar );
     players.remove( player );
 
     // Reset all past players.
@@ -251,6 +260,7 @@ public class GameMain extends Application
     // Remove all player meshes and player lives.
     // The past lives don't persist beyond a single level.
     for( Entity p : players ){ game_root.getChildren().remove( p.meshview ); }
+    game_root.getChildren().remove( player.healthbar );
     players.removeAll(players);
 
     // Create a new map.

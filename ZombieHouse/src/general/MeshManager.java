@@ -15,6 +15,7 @@ public class MeshManager
 {
   private static ObjModelImporter importer = new ObjModelImporter();
   private static Map<String, Mesh> meshes = new HashMap<>();
+  private static Map<String, Material> materials = new HashMap<>();
   private static Map<String, Integer[]> animation_start_and_finish = new HashMap<>();
 
   // Sadly, for the moment this has to be done manually.
@@ -58,11 +59,10 @@ public class MeshManager
 
   public static Material getMaterial(String name )
   {
-    // Add the quick reference import here so we don't import a million times over.
+    if( materials.containsKey(name) ){ return materials.get(name); }
     importer.read("ZombieHouse/src/meshes/"+name+".obj");
     Node[] temp = importer.getImport();
-
-    Mesh mesh = ((MeshView)temp[0]).getMesh();
+    materials.put( name, ((MeshView) temp[0]).getMaterial());
     return ((MeshView) temp[0]).getMaterial();
   }
 

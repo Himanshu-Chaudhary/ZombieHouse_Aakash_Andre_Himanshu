@@ -1,11 +1,14 @@
 package entities;
 
 import general.GameMain;
+import general.MaterialsManager;
+import general.MeshManager;
 import input.InputHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
+import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,7 @@ public class Player extends Entity
   public List<Double> past_position_z = new ArrayList<>();
   public List<Double> past_direction = new ArrayList<>();
   public List<String> past_states = new ArrayList<>();
+  public MeshView healthbar;
 
   public Player( int x, int y, int z )
   {
@@ -39,6 +43,15 @@ public class Player extends Entity
     super.material = new PhongMaterial( Color.MAGENTA );
     super.meshview = new MeshView();
     super.meshview.setMesh( null );
+
+    this.healthbar = new MeshView();
+    this.healthbar.setMesh(MeshManager.getMesh("HealthPentagon"));
+    this.healthbar.setTranslateY(-4.2);
+    this.healthbar.setScaleX(3);
+    this.healthbar.setScaleZ(3);
+    this.healthbar.setScaleY(1);
+    this.healthbar.setMaterial( new PhongMaterial(Color.BLACK));
+    GameMain.game_root.getChildren().add(this.healthbar);
   }
 
   @Override public void update( double time )
@@ -73,8 +86,18 @@ public class Player extends Entity
     d = d>100? 0 : 1-d/100;
     this.material.setDiffuseColor( Color.color(d,d,d));
     super.display( dt_ms );
+    this.drawHealthbar();
 
     super.update_timer = time;
+  }
+
+  private void drawHealthbar()
+  {
+    this.healthbar.setTranslateX( super.position_x );
+    this.healthbar.setTranslateZ( super.position_z );
+    this.healthbar.setRotationAxis(Rotate.Y_AXIS );
+    this.healthbar.setRotate( super.direction+180 );
+    this.healthbar.setMaterial(MaterialsManager.PLAYER_HEALTHBAR_MATERIALS[ (int) (super.health/23) ]);
   }
 
   private void run(double dt )
@@ -157,7 +180,7 @@ public class Player extends Entity
       for( Zombie z : GameMain.zombies )
       {
         distance = Math.sqrt( Math.pow(z.position_x-super.position_x,2)+Math.pow(z.position_z-super.position_z,2));
-        if( distance < 20 )
+        if( distance < 30 )
         {
           z.health -= 1;
         }
