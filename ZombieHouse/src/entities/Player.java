@@ -82,9 +82,10 @@ public class Player extends Entity
     if( super.state.equals("RUN")){ run( dt_ms ); }
     if( super.state.equals("ATTACK")){ attack( dt_ms ); }
 
-    double d = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
-    d = d>100? 0 : 1-d/100;
-    this.material.setDiffuseColor( Color.color(d,d,d));
+//    double d = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
+//    d = d>100? 0 : 1-d/100;
+//    this.material.setDiffuseColor( Color.color(d,d,d));
+
     super.display( dt_ms );
     this.drawHealthbar();
 

@@ -5,7 +5,6 @@ import general.MaterialsManager;
 import general.MeshManager;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Mesh;
@@ -18,14 +17,22 @@ import java.util.List;
 
 public class BoardManager
 {
-
   private static ArrayList<Mesh> mapMeshes = new ArrayList<>();
 
   static
   {
-    mapMeshes.add( MeshManager.getMesh("Rib_Wall_0"));
-    mapMeshes.add( MeshManager.getMesh("Rib_Peninsula_0"));
-    mapMeshes.add( MeshManager.getMesh("Rib_Corner_0"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R1_Wall"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R1_Peninsula"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R1_Corner"));
+
+    mapMeshes.add( MeshManager.getMesh("WALLS/R2_Wall"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R2_Peninsula"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R2_Corner"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R2_Obstacle"));
+
+    mapMeshes.add( MeshManager.getMesh("WALLS/R3_Wall"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R3_Peninsula"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R3_Corner"));
   }
 
   public static void configurePathNodes( Tile[][] map, PathNode[][] path_nodes )
@@ -62,32 +69,28 @@ public class BoardManager
         group.getChildren().add(board_boxes[0][x][y]);
         group.getChildren().add(board_boxes[1][x][y]);
 
-        if( map[x][y].getRegion() == -1)
+        temp_material = new PhongMaterial();
+        String mesh_name;
+
+        if( map[x][y].getRegion() == -1) //The exit.
         {
           GameMain.exit_x = x*10;
           GameMain.exit_z = y*10;
         }
-        else if( map[x][y].isWall && !map[x][y].isObstacle )
+        else if( map[x][y].isWall && !map[x][y].isObstacle ) // A peninsula, corner or wall.
         {
-          // Set the wall to a material based on that of the wall material for this region.
-          // [ The reason for the separate materials (new materials for each) is for our smooth FoW effect. ]
-          temp_material = new PhongMaterial( MaterialsManager.WALL_MATERIALS[map[x][y].getRegion()-1].getDiffuseColor() );
-          temp_material.setDiffuseMap( MaterialsManager.WALL_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
-          temp_material.setSpecularMap( MaterialsManager.WALL_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
-          temp_material.setBumpMap( MaterialsManager.WALL_MATERIALS[map[x][y].getRegion()-1].getBumpMap() );
-
-          board_boxes[0][x][y].setMaterial( temp_material );
-          //board_boxes[0][x][y].setHeight(60);
-          //board_boxes[0][x][y].setTranslateY(20);
-
-//          boolean above = y+1 < GameMain.board_size-1 || (map[x][y+1].isWall || map[x][y+1].isBorder);
-//          boolean below = y-1 > 0 || (map[x][y-1].isWall || map[x][y-1].isBorder);
-//          boolean left = x+1 < GameMain.board_size-1 || (map[x+1][y].isWall || map[x+1][y].isBorder);
-//          boolean right = x-1 > 0 || (map[x-1][y].isWall || map[x-1][y].isBorder);
+          // First set the floor below the wall.
+          // I pulled a stunt here.
+//          temp_material = new PhongMaterial( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseColor() );
+//          temp_material.setDiffuseMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
+//          temp_material.setSpecularMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
+//          temp_material.setBumpMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getBumpMap() );
+//          board_boxes[0][x][y].setMaterial( temp_material ); // Just for now. I'll sort this later.
           boolean above = !( y+1 < GameMain.board_size-1 && (!map[x][y+1].isWall && !map[x][y+1].isBorder) );
           boolean below = !( y-1 > 0 && (!map[x][y-1].isWall && !map[x][y-1].isBorder) );
           boolean left = !( x+1 < GameMain.board_size-1 && (!map[x+1][y].isWall && !map[x+1][y].isBorder) );
           boolean right = !( x-1 > 0 && (!map[x-1][y].isWall && !map[x-1][y].isBorder) );
+
           int total = 0;
           if(above) total++;
           if(below) total++;
@@ -103,32 +106,51 @@ public class BoardManager
           wall.setTranslateY(20);
           wall.setRotationAxis(Rotate.Y_AXIS);
 
-          wall.setMaterial( temp_material ); // Just for now. I'll sort this later.
-
           if ( (left && right) || (above && below) ) // It's a wall, or won't do harm acting as one.
           {
-            wall.setMesh( MeshManager.getMesh("Rib_Wall_0") );
+            if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R1_Wall"; // Replace with Wall + map[x][y].getRegion()
+            else if( map[x][y].getRegion() == 2) mesh_name = "WALLS/R2_Wall";
+            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/R3_Wall";
+            else mesh_name = "WALLS/R3_Wall";
+
+            wall.setMesh( MeshManager.getMesh(mesh_name));
+            temp_material= new PhongMaterial( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseColor() );
+            temp_material.setDiffuseMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseMap() );
+            temp_material.setSpecularMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getSpecularMap() );
+            temp_material.setBumpMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getBumpMap() );
+            wall.setMaterial(temp_material);
             GameMain.game_root.getChildren().add(wall);
-//            wall.setMaterial( temp_material );
-//            wall.setMaterial( MeshManager.getMaterial("Rib_Wall_0"));
-//            ((PhongMaterial) wall.getMaterial()).setDiffuseColor( Color.WHITE );
           }
           else if ( total == 1 ) // Peninsula.
           {
-            wall.setMesh( MeshManager.getMesh("Rib_Peninsula_0") );
+            if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R1_Peninsula"; // Replace with Wall + map[x][y].getRegion()
+            else if( map[x][y].getRegion() == 2) mesh_name = "WALLS/R2_Peninsula";
+            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/R3_Peninsula";
+            else mesh_name = "WALLS/R3_Peninsula";
+
+            wall.setMesh( MeshManager.getMesh(mesh_name) );
+            temp_material= new PhongMaterial( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseColor() );
+            temp_material.setDiffuseMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseMap() );
+            temp_material.setSpecularMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getSpecularMap() );
+            temp_material.setBumpMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getBumpMap() );
+            wall.setMaterial(temp_material);
             GameMain.game_root.getChildren().add(wall);
-//            wall.setMaterial( temp_material );
-//            wall.setMaterial( MeshManager.getMaterial("Rib_Wall_0"));
-//            ((PhongMaterial) wall.getMaterial()).setDiffuseColor( Color.BLUE );
           }
-          else
+          else // Corner.
           {
-            wall.setMesh( MeshManager.getMesh("Rib_Corner_0") );
+            if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R1_Corner"; // Replace with Wall + map[x][y].getRegion()
+            else if( map[x][y].getRegion() == 2) mesh_name = "WALLS/R2_Corner";
+            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/R3_Corner";
+            else mesh_name = "WALLS/R3_Corner";
+            wall.setMesh( MeshManager.getMesh(mesh_name) );
+            temp_material= new PhongMaterial( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseColor() );
+            temp_material.setDiffuseMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseMap() );
+            temp_material.setSpecularMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getSpecularMap() );
+            temp_material.setBumpMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getBumpMap() );
+            wall.setMaterial(temp_material);
             GameMain.game_root.getChildren().add(wall);
-//            wall.setMaterial( temp_material );
-//            wall.setMaterial( MeshManager.getMaterial("Rib_Corner_0"));
-//            ((PhongMaterial) wall.getMaterial()).setDiffuseColor( Color.SALMON );
           }
+          board_boxes[0][x][y].setMaterial( temp_material ); // Just for now. I'll sort this later.
 
           // Rotate as needed for each mesh.
           if( above && below ){} // No rotation
@@ -142,31 +164,34 @@ public class BoardManager
           else if ( left && above ){ wall.setRotate(90);}
           else if ( right && below ){ wall.setRotate(270);}
 
-          // And now set the ceiling above the wall.
-          // Set the ceiling to a material based on that of the ceiling material for this region.
-          // [ The reason for the separate materials (new materials for each) is for our smooth FoW effect. ]
+          // ...and now set the ceiling above the wall.
           temp_material = new PhongMaterial( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getDiffuseColor() );
           temp_material.setDiffuseMap( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
           temp_material.setSpecularMap( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
           temp_material.setBumpMap( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getBumpMap() );
-
           board_boxes[1][x][y].setMaterial( temp_material );
         }
-        else
+        else // Floor & ceiling (non-wall)
         {
           // Set the floor to a material based on that of the floor material for this region.
           // [ The reason for the separate materials (new materials for each) is for our smooth FoW effect. ]
+          // Pulling a stunt here again. Linking to obs. mat.
           temp_material = new PhongMaterial( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseColor() );
           temp_material.setDiffuseMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
           temp_material.setSpecularMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
           temp_material.setBumpMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getBumpMap() );
 
-          board_boxes[0][x][y].setMaterial(temp_material);
-
+          // OBSTACLE : mesh & material assignment
           if( map[x][y].isObstacle )
           {
             MeshView pillar = new MeshView();
-            pillar.setMesh( MeshManager.getMesh("Rib_Wall_0") );
+
+            if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R2_Obstacle"; // Replace with Wall + map[x][y].getRegion()
+            else if( map[x][y].getRegion() == 2) mesh_name = "WALLS/R2_Obstacle";
+            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/R2_Obstacle";
+            else mesh_name = "WALLS/R2_Obstacle";
+
+            pillar.setMesh( MeshManager.getMesh(mesh_name) );
             pillar.setScaleX(8);
             pillar.setScaleY(-8);
             pillar.setScaleZ(8);
@@ -175,10 +200,14 @@ public class BoardManager
             pillar.setTranslateY(20);
             GameMain.game_root.getChildren().add(pillar);
 
+            temp_material = new PhongMaterial(((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseColor() );
+            temp_material.setDiffuseMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseMap() );
+            temp_material.setSpecularMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getSpecularMap() );
+            temp_material.setBumpMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getBumpMap() );
+
             pillar.setMaterial( temp_material ); // Again, just for now. Will sort out later.
-//            pillar.setMaterial( MeshManager.getMaterial("Rib_Wall_0"));
-//            ((PhongMaterial) pillar.getMaterial()).setDiffuseColor( Color.WHITE );
           }
+          board_boxes[0][x][y].setMaterial( temp_material ); // Just for now. I'll sort this later.
 
           // Set the ceiling to a material based on that of the ceiling material for this region.
           // [ The reason for the separate materials (new materials for each) is for our smooth FoW effect. ]
@@ -186,7 +215,6 @@ public class BoardManager
           temp_material.setDiffuseMap( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
           temp_material.setSpecularMap( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
           temp_material.setBumpMap( MaterialsManager.CEILING_MATERIALS[map[x][y].getRegion()-1].getBumpMap() );
-
           board_boxes[1][x][y].setMaterial( temp_material );
 
         }

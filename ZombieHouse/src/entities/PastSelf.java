@@ -32,6 +32,11 @@ public class PastSelf extends Entity
     super.meshview.setMesh( null );
   }
 
+  public boolean isDead()
+  {
+    return currentStep>=totalStep;
+  }
+
   public void update( double time )
   {
     double dt_ms = time - super.update_timer;
@@ -57,6 +62,11 @@ public class PastSelf extends Entity
 
       currentStep++;
     }
+    else
+    {
+      this.proposeState("RUN", 0, 10);
+      display( dt_ms );
+    }
     super.update_timer = time;
   }
 
@@ -69,7 +79,7 @@ public class PastSelf extends Entity
       for( Zombie z : GameMain.zombies )
       {
         distance = Math.sqrt( Math.pow(z.position_x-super.position_x,2)+Math.pow(z.position_z-super.position_z,2));
-        if( distance < 20 ) { z.health -= 1; }
+        if( distance < 30 ) { z.health -= 1; }
       }
     }
 
@@ -77,7 +87,7 @@ public class PastSelf extends Entity
     {
       double distance;
       distance = Math.sqrt( Math.pow(GameMain.player.position_x-super.position_x,2)+Math.pow(GameMain.player.position_z-super.position_z,2));
-      if( distance < 20 ){ GameMain.player.health -= 1; }
+      if( distance < 30 ){ GameMain.player.health -= 1; }
     }
 
   }

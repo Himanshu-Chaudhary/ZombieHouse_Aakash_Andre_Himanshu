@@ -160,10 +160,10 @@ public class GameMain extends Application
           if ( d > 1) d = 1;
           d = 1-d;
           ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setDiffuseColor( Color.color(d,d,d) );
-          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setSpecularColor( Color.color(d,d,d/1.2) );
+          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setSpecularColor( Color.color(d,d,d) );
           if( board_boxes[1][x][y] != null && board_boxes[1][x][y].getMaterial() != null)
           {
-            ((PhongMaterial) board_boxes[1][x][y].getMaterial()).setDiffuseColor(Color.color(d/6, d/6, d/6));
+            ((PhongMaterial) board_boxes[1][x][y].getMaterial()).setDiffuseColor(Color.color(d/3, d/3, d/3));
           }
         }
       }
@@ -209,8 +209,9 @@ public class GameMain extends Application
     my_camera.cameraXform.setTranslateX( player.position_x );
     my_camera.cameraXform.setTranslateZ( player.position_z );
 
-    light.setTranslateX( player.position_x - 2* Math.sin( Math.toRadians( player.direction )));
-    light.setTranslateZ( player.position_z - 2* Math.cos( Math.toRadians( player.direction )));
+    light.setTranslateX( player.position_x + 2* Math.sin( Math.toRadians( player.direction )));
+    light.setTranslateZ( player.position_z + 2* Math.cos( Math.toRadians( player.direction )));
+    light.setTranslateY( 10 );
     light.setColor( Color.color(0.9,0.9,0.9) );
   }
 

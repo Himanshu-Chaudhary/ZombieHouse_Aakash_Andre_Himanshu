@@ -131,33 +131,36 @@ public class Zombie extends Entity
 
     for( Entity p : GameMain.players )
     {
-      double dist = Math.sqrt( Math.pow(p.position_x-super.position_x,2)+Math.pow(p.position_z-super.position_z,2));
+      //double dist = Math.sqrt( Math.pow(p.position_x-super.position_x,2)+Math.pow(p.position_z-super.position_z,2));
       //if(dist > 200){ continue; } // Don't bother searching for the player if we're too far away anyway.
-
-      myNode = GameMain.path_nodes[ (int) ((super.position_x+5)/10.0) ][ (int) ((super.position_z+5)/10.0) ];
-      playerNode = GameMain.path_nodes[ (int) ((p.position_x+5)/10) ][ (int) ((p.position_z+5)/10) ];
-      path = Pathfinding.getPath( GameMain.path_nodes, playerNode, myNode );
-
-      path_length = 0;
-      temp_node = myNode;
-
-      while(temp_node != null && path != null)
+      if (p instanceof PastSelf && ((PastSelf) p).isDead())
       {
-        temp_node = path.get(temp_node);
-        path_length++;
-      }
-
-      if( path_length > 1 && path_length < this.smell_range && super.position_x - ((int) ((super.position_x+5)/10.0))*10 <= 5 &&
-              super.position_z - ((int) ((super.position_z+5)/10.0))*10 <= 5 && path_length < best_length)
+      } else
       {
-        // ... then move towards the targeted path node.
-        best_length = path_length;
-        dx = super.position_z - path.get(myNode).y * 10;
-        dy = super.position_x - path.get(myNode).x * 10;
-        super.direction = Math.toDegrees(Math.atan2(dy, dx));
+        myNode = GameMain.path_nodes[(int) ((super.position_x + 5) / 10.0)][(int) ((super.position_z + 5) / 10.0)];
+        playerNode = GameMain.path_nodes[(int) ((p.position_x + 5) / 10)][(int) ((p.position_z + 5) / 10)];
+        path = Pathfinding.getPath(GameMain.path_nodes, playerNode, myNode);
+
+        path_length = 0;
+        temp_node = myNode;
+
+        while (temp_node != null && path != null)
+        {
+          temp_node = path.get(temp_node);
+          path_length++;
+        }
+
+        if (path_length > 1 && path_length < this.smell_range && super.position_x - ((int) ((super.position_x + 5) / 10.0)) * 10 <= 5 &&
+                super.position_z - ((int) ((super.position_z + 5) / 10.0)) * 10 <= 5 && path_length < best_length)
+        {
+          // ... then move towards the targeted path node.
+          best_length = path_length;
+          dx = super.position_z - path.get(myNode).y * 10;
+          dy = super.position_x - path.get(myNode).x * 10;
+          super.direction = Math.toDegrees(Math.atan2(dy, dx));
+        }
       }
     }
-
   }
 
   private void instigateAttack() {
@@ -167,6 +170,7 @@ public class Zombie extends Entity
     target = null;
     for( Entity p : GameMain.players )
     {
+      if( p instanceof PastSelf && ((PastSelf) p).isDead() ){ continue; }
       dist = Math.sqrt( Math.pow(p.position_x-super.position_x,2)+Math.pow(p.position_z-super.position_z,2));
       if( dist < min_dist )
       {
@@ -174,18 +178,16 @@ public class Zombie extends Entity
         target = p;
       }
     }
-    if( target != null && min_dist < 25 )
+    if( target != null && min_dist < 15 )
     {
       this.proposeState("ATTACK", 1, 1);
-      //super.direction = Math.toDegrees(Math.atan2( target.position_z-super.position_z, target.position_x-super.position_x ));
     }
-
   }
 
   private void attack(double dt)
   {
     super.direction = Math.toDegrees(Math.atan2( super.position_x-target.position_x, super.position_z-target.position_z));
-    if( super.state_timer < 400 )
+    if( super.state_timer > 400 )
     {
       // We only damage the player, because we don't care about past player's health.
       double distance = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));

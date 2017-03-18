@@ -1,6 +1,5 @@
 package general;
 
-import com.interactivemesh.jfx.importer.obj.ObjImportOption;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import entities.Entity;
 import javafx.scene.Node;
@@ -33,8 +32,8 @@ public class MeshManager
     int start_frame = animation_start_and_finish.get(animation_name)[0];
     int num_frames = animation_start_and_finish.get(animation_name)[1];
     int display_frame = (((int) e.frame)+start_frame) % num_frames;
-    String mesh_name = String.format("%s%s_%06d.obj",
-            "ZombieHouse/src/meshes/", animation_name, display_frame);
+    String mesh_name = String.format("%s%s/%s_%06d.obj",
+            "ZombieHouse/src/meshes/", e.name, animation_name, display_frame);
     if( meshes.containsKey(mesh_name) ) return meshes.get(mesh_name);
     importer.read(mesh_name);
     Mesh mesh = importer.getImport()[0].getMesh();
