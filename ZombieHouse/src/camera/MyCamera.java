@@ -1,5 +1,6 @@
 package camera;
 
+import general.GameMain;
 import input.InputHandler;
 import general.Xform;
 import javafx.scene.PerspectiveCamera;
@@ -11,7 +12,7 @@ public class MyCamera
   public final Xform cameraXform = new Xform();
   final Xform cameraXform2 = new Xform();
   final Xform cameraXform3 = new Xform();
-  private static final double CAMERA_INITIAL_DISTANCE = -23;
+  private static final double CAMERA_INITIAL_DISTANCE = -10;
   private static final double CAMERA_INITIAL_X_ANGLE = 80;
   private static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
   private static final double CAMERA_NEAR_CLIP = 2;
@@ -30,6 +31,19 @@ public class MyCamera
     }
     cameraXform.ry.setAngle(cameraXform.ry.getAngle()%360);
 
+    if (GameMain.player.state.equals("RUN"))
+    {
+      camera.setFieldOfView((125+5*camera.getFieldOfView())/6.0);
+      cameraXform.rz.setAngle((5*cameraXform.rz.getAngle()+35)/6.0);
+
+    }
+    else
+    {
+      camera.setFieldOfView((105+10*camera.getFieldOfView())/11.0);
+      cameraXform.rz.setAngle(cameraXform.rz.getAngle()/1.1);
+
+    }
+
   }
 
   public MyCamera()
@@ -40,7 +54,7 @@ public class MyCamera
     cameraXform3.setRotateZ(180.0);
     cameraXform.setTranslateY(13);
 
-    camera.setFieldOfView(70);
+    camera.setFieldOfView(100);
     camera.setNearClip(CAMERA_NEAR_CLIP);
     camera.setFarClip(CAMERA_FAR_CLIP);
     camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);

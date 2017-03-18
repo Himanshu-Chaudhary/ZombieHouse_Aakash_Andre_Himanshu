@@ -65,18 +65,23 @@ public class MaterialsManager
                           null // Self-Illumination
                   ),
                   new PhongMaterial( Color.WHITE,
-                          new Image("File:ZombieHouse/src/images/checker_plain_2.jpg", 128, 128, true, true, true), // Diffuse
-                          new Image("File:ZombieHouse/src/images/checker_specular.jpg", 128, 128, true, true, false), // Specular
-                          new Image("File:ZombieHouse/src/images/checker_normal.jpg", 128, 128, true, true, false), // Normal/Bump
+                          new Image("File:ZombieHouse/src/images/big_checker.png", 128, 128, true, true, true), // Diffuse
+                          new Image("File:ZombieHouse/src/images/big_checker_specular.png", 128, 128, true, true, false), // Specular
+                          new Image("File:ZombieHouse/src/images/big_checker_bump.png", 128, 128, true, true, false), // Normal/Bump
                           null // Self-Illumination
                   ),
                   new PhongMaterial( Color.WHITE,
                           new Image("File:ZombieHouse/src/images/red_carpet.png", 128, 128, true, true, true), // Diffuse
-                          new Image("File:ZombieHouse/src/images/carpet_bump.jpg", 128, 128, true, true, false), // Specular
-                          new Image("File:ZombieHouse/src/images/carped_normal.jpg", 128, 128, true, true, false), // Normal/Bump
+                          new Image("File:ZombieHouse/src/images/carpet_bump.png", 128, 128, true, true, false), // Specular
+                          new Image("File:ZombieHouse/src/images/carpet_normal.png", 128, 128, true, true, false), // Normal/Bump
                           null // Self-Illumination
                   ),
-                  new PhongMaterial( Color.WHITE, null, null, null, null )
+                  new PhongMaterial( Color.WHITE,
+                          new Image("File:ZombieHouse/src/images/wood_planks.jpg", 128, 128, true, true, true), // Diffuse
+                          new Image("File:ZombieHouse/src/images/wood_planks_specular.jpg", 128, 128, true, true, false), // Specular
+                          new Image("File:ZombieHouse/src/images/wood_planks_normal.jpg", 128, 128, true, true, false), // Normal/Bump
+                          null // Self-Illumination
+                  )
           };
 
   public static final PhongMaterial[] WALL_MATERIALS = new PhongMaterial[]
@@ -127,7 +132,11 @@ public class MaterialsManager
                           new Image("File:ZombieHouse/src/images/carped_normal.jpg", 128, 128, true, true, false), // Normal/Bump
                           null // Self-Illumination
                   ),
-                  new PhongMaterial( Color.WHITE, null, null, null, null )
+                  new PhongMaterial( Color.WHITE,
+                          new Image("File:ZombieHouse/src/images/wood_planks.jpg", 128, 128, true, true, true), // Diffuse
+                          new Image("File:ZombieHouse/src/images/wood_planks_specular.jpg", 128, 128, true, true, false), // Specular
+                          new Image("File:ZombieHouse/src/images/wood_planks_normal.jpg", 128, 128, true, true, false), // Normal/Bump
+                          null) // Self-Illumination
           };
 
 }

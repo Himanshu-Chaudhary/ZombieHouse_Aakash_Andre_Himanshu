@@ -24,6 +24,7 @@ public class MeshManager
     animation_start_and_finish.put("PLAYER_IDLE", new Integer[]{0, 1});
     animation_start_and_finish.put("PLAYER_RUN", new Integer[]{0, 12});
     animation_start_and_finish.put("PLAYER_ATTACK", new Integer[]{0, 40});
+    animation_start_and_finish.put("PLAYER_WALK", new Integer[]{1, 32});
   }
 
   public static Mesh updateMesh ( Entity e )
@@ -31,7 +32,8 @@ public class MeshManager
     String animation_name = String.format("%s_%s", e.name, e.state);
     int start_frame = animation_start_and_finish.get(animation_name)[0];
     int num_frames = animation_start_and_finish.get(animation_name)[1];
-    int display_frame = (((int) e.frame)+start_frame) % num_frames;
+    int display_frame = (((int) e.frame)%num_frames) + start_frame;
+
     String mesh_name = String.format("%s%s/%s_%06d.obj",
             "ZombieHouse/src/meshes/", e.name, animation_name, display_frame);
     if( meshes.containsKey(mesh_name) ) return meshes.get(mesh_name);

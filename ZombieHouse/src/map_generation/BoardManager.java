@@ -198,7 +198,10 @@ public class BoardManager
             pillar.setTranslateX(x*10);
             pillar.setTranslateZ(y*10);
             pillar.setTranslateY(20);
+            pillar.setRotationAxis(Rotate.Y_AXIS);
+            pillar.setRotate( Math.random()*360 ); // Any direction is okay for the pillars.
             GameMain.game_root.getChildren().add(pillar);
+
 
             temp_material = new PhongMaterial(((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseColor() );
             temp_material.setDiffuseMap( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseMap() );

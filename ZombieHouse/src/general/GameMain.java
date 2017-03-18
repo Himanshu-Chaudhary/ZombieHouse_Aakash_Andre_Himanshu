@@ -105,14 +105,14 @@ public class GameMain extends Application
     timeline.play();
 
     // Configure the map for our game, including appearance and path-finding.
-    map = ProceduralMap.generateMap( board_size, board_size, 1 );
+    map = ProceduralMap.generateMap( board_size, board_size, 2 );
     BoardManager.removeMapMeshes( game_root );
     BoardManager.addMapMeshes( board_boxes, map, game_root );
     BoardManager.configurePathNodes( map, path_nodes );
 
     player = new Player(20,40,20);
     players.add( player );
-    spawnZombies();
+    //spawnZombies();
 
     my_camera = new MyCamera();
     Scene scene = new Scene( game_root, 1024, 768, true );
@@ -159,7 +159,7 @@ public class GameMain extends Application
           d = d/100;
           if ( d > 1) d = 1;
           d = 1-d;
-          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setDiffuseColor( Color.color(d,d,d) );
+          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setDiffuseColor( Color.color(d/1.2,d/1.1   ,d) );
           ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setSpecularColor( Color.color(d,d,d) );
           if( board_boxes[1][x][y] != null && board_boxes[1][x][y].getMaterial() != null)
           {
@@ -209,10 +209,10 @@ public class GameMain extends Application
     my_camera.cameraXform.setTranslateX( player.position_x );
     my_camera.cameraXform.setTranslateZ( player.position_z );
 
-    light.setTranslateX( player.position_x + 2* Math.sin( Math.toRadians( player.direction )));
-    light.setTranslateZ( player.position_z + 2* Math.cos( Math.toRadians( player.direction )));
+    light.setTranslateX( player.position_x - 2* Math.sin( Math.toRadians( player.direction )));
+    light.setTranslateZ( player.position_z - 2* Math.cos( Math.toRadians( player.direction )));
     light.setTranslateY( 10 );
-    light.setColor( Color.color(0.9,0.9,0.9) );
+    light.setColor( Color.color(0.4,0.3,0.25) );
   }
 
   private void playerDied()
@@ -265,7 +265,7 @@ public class GameMain extends Application
     players.removeAll(players);
 
     // Create a new map.
-    map = ProceduralMap.generateMap( board_size, board_size, 1 );
+    map = ProceduralMap.generateMap( board_size, board_size, 2 );
     BoardManager.removeMapMeshes( game_root );
     BoardManager.addMapMeshes( board_boxes, map, game_root );
     BoardManager.configurePathNodes( map, path_nodes );

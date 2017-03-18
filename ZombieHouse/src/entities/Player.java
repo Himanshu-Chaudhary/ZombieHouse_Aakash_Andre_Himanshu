@@ -21,6 +21,13 @@ public class Player extends Entity
   public List<String> past_states = new ArrayList<>();
   public MeshView healthbar;
 
+  private double stamina = 0; // Maybe a heartbeat plays subtly here. Faster means less stamina left.
+                              // This should also be a function of one's health - that is, you can't run
+                              // for as long if you're dying.
+
+  private double stamina_decay = 0.2;
+  private double stamina_regen = 0.2;
+
   public Player( int x, int y, int z )
   {
     super.name = "PLAYER";
@@ -33,7 +40,7 @@ public class Player extends Entity
 
     super.health = 100;
     super.damage = 10;
-    super.speed = 1.00;
+    super.speed = 0.3;
 
     super.direction = 0;
     super.position_x = x;
@@ -68,6 +75,7 @@ public class Player extends Entity
     String state_backup = super.state;
 
     instigateIdle();
+    instigateWalk();
     instigateRun();
     instigateAttack();
 
@@ -79,7 +87,7 @@ public class Player extends Entity
     }
 
     if( super.state.equals("IDLE")){ /* Do nothing. */ }
-    if( super.state.equals("RUN")){ run( dt_ms ); }
+    if( super.state.equals("WALK") || super.state.equals("RUN")){ walk( dt_ms ); }
     if( super.state.equals("ATTACK")){ attack( dt_ms ); }
 
 //    double d = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
@@ -101,8 +109,25 @@ public class Player extends Entity
     this.healthbar.setMaterial(MaterialsManager.PLAYER_HEALTHBAR_MATERIALS[ (int) (super.health/23) ]);
   }
 
-  private void run(double dt )
+  private void walk(double dt )
   {
+    if( super.state.equals("WALK"))
+    {
+      this.speed = 0.3;
+      if( this.stamina < super.health )
+      {
+        stamina += stamina_regen;
+      }
+    }
+    else if ( super.state.equals("RUN"))
+    {
+      this.speed = 1;
+      if(this.stamina > this.stamina_decay) this.stamina -= this.stamina_decay;
+      else { this.stamina = 0; }
+    }
+
+
+
     double x_component = 0;
     double z_component = 0;
 
@@ -199,18 +224,26 @@ public class Player extends Entity
       super.proposeState("ATTACK", 1, 1);
     }
   }
+  private void instigateRun()
+  {
+    if( super.state.equals("WALK") && InputHandler.isKeyDown(KeyCode.SHIFT)
+            && ((super.speed == 1 && this.stamina > 0) || (super.speed == 0.3 && this.stamina > 30)))
+    {
+      this.proposeState("RUN", 0, 1);
+    }
+  }
   private void instigateIdle()
   {
     super.proposeState("IDLE", 0, 1);
   }
-  private void instigateRun()
+  private void instigateWalk()
   {
     if (    InputHandler.isKeyDown(KeyCode.W) ||
             InputHandler.isKeyDown(KeyCode.A) ||
             InputHandler.isKeyDown(KeyCode.S) ||
             InputHandler.isKeyDown(KeyCode.D))
     {
-      super.proposeState("RUN", 0, 1);
+      super.proposeState("WALK", 0, 1);
     }
   }
 
