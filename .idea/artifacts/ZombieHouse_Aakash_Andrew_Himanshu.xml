@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="ZombieHouse_Aakash_Andrew_Himanshu">
+    <output-path>$PROJECT_DIR$/out/artifacts/ZombieHouse_Aakash_Andrew_Himanshu</output-path>
+    <root id="archive" name="ZombieHouse_Aakash_Andrew_Himanshu.jar">
+      <element id="dir-copy" path="$PROJECT_DIR$/../Zombie-House-master/src" />
+    </root>
+  </artifact>
+</component>
