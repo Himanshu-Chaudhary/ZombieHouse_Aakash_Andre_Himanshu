@@ -112,7 +112,7 @@ public class GameMain extends Application
 
     player = new Player(20,40,20);
     players.add( player );
-    //spawnZombies();
+    spawnZombies();
 
     my_camera = new MyCamera();
     Scene scene = new Scene( game_root, 1024, 768, true );

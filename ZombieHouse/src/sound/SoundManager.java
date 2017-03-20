@@ -53,6 +53,10 @@ public class SoundManager
     name = "sword_swing";
     url = getClass().getResource(name + ".wav");
     loadSoundClip(name, url);
+
+    name = "exit";
+    url = getClass().getResource(name + ".wav");
+    loadSoundClip(name, url);
   }
   private void loadSoundClip(String ID, URL url){
     AudioClip sound = new AudioClip(url.toExternalForm());
@@ -63,7 +67,7 @@ public class SoundManager
    public void playZombieGroan(double distance, double balance){
 
     Random random = new Random();
-    double volume = 0.4;
+    double volume = (10/distance);
     int i = random.nextInt(GROANS);
     AudioClip clip = sounds.get("groan" + i);
     clip.play(volume,balance,1,0,1);
@@ -95,6 +99,12 @@ public class SoundManager
   public void playSwordSwing(){
     double volume = 0.1;
     AudioClip clip = sounds.get("sword_swing");
+    clip.play(volume,0,1,0,1);
+  }
+
+  public void playExit(){
+    double volume = 0.8;
+    AudioClip clip = sounds.get("exit");
     clip.play(volume,0,1,0,1);
   }
 
