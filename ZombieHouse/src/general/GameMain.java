@@ -134,7 +134,11 @@ public class GameMain extends Application
           zombies.add( z );
         }
       }
+
+
     }
+    z = new Zombie(30,40,30,MaterialsManager.MASTER_ZOMBIE_MATERIALS[0]);
+    zombies.add( z );
   }
 
   // Fade out the brightness of the board, depending on proximity to the player.
