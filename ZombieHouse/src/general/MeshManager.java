@@ -61,7 +61,7 @@ public class MeshManager
 
 
     Mesh mesh = ((MeshView)temp[0]).getMesh();
-    System.out.println(" " + ((MeshView) temp[0]).getMaterial());
+    //System.out.println(" " + ((MeshView) temp[0]).getMaterial());
 
     meshes.put( name, mesh );
     return mesh;
