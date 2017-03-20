@@ -27,6 +27,7 @@ public class ProceduralMap
    * 
    * @param rows row in map
    * @param cols column in map
+   *
    * @param difficulty the difficulty of the game
    * @return a newly generated level as a 2d array of Tile objects in rows x columns format
    */
