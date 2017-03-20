@@ -8,6 +8,6 @@ Kd 0.8 0.8 0.8
 Ks 0.8 0.8 0.8
 d 1
 illum 2
-map_Kd R1_diffuse.jpg
-map_Ks R1_specular.jpg
-bump R1_bump.jpg
+map_Kd R1_diffuse_small.jpg
+map_Ks R1_specular_small.jpg
+bump R1_bump_small.jpg

@@ -5,6 +5,8 @@ import general.MaterialsManager;
 import general.MeshManager;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Mesh;
@@ -24,6 +26,7 @@ public class BoardManager
     mapMeshes.add( MeshManager.getMesh("WALLS/R1_Wall"));
     mapMeshes.add( MeshManager.getMesh("WALLS/R1_Peninsula"));
     mapMeshes.add( MeshManager.getMesh("WALLS/R1_Corner"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R1_Obstacle"));
 
     mapMeshes.add( MeshManager.getMesh("WALLS/R2_Wall"));
     mapMeshes.add( MeshManager.getMesh("WALLS/R2_Peninsula"));
@@ -33,6 +36,12 @@ public class BoardManager
     mapMeshes.add( MeshManager.getMesh("WALLS/R3_Wall"));
     mapMeshes.add( MeshManager.getMesh("WALLS/R3_Peninsula"));
     mapMeshes.add( MeshManager.getMesh("WALLS/R3_Corner"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R3_Obstacle"));
+
+    mapMeshes.add( MeshManager.getMesh("WALLS/Cloth_Pillar"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/Cloth_Wall_2"));
+//    mapMeshes.add( MeshManager.getMesh("WALLS/R4_Corner"));
+    mapMeshes.add( MeshManager.getMesh("WALLS/R4_Obstacle"));
   }
 
   public static void configurePathNodes( Tile[][] map, PathNode[][] path_nodes )
@@ -76,6 +85,11 @@ public class BoardManager
         {
           GameMain.exit_x = x*10;
           GameMain.exit_z = y*10;
+          board_boxes[0][x][y].setHeight(100);
+          PhongMaterial white = new PhongMaterial();
+          white.setDiffuseColor( Color.WHITE );
+          white.setSelfIlluminationMap( new Image("File:ZombieHouse/src/images/white.png") );
+          board_boxes[0][x][y].setMaterial( white );
         }
         else if( map[x][y].isWall && !map[x][y].isObstacle ) // A peninsula, corner or wall.
         {
@@ -110,7 +124,7 @@ public class BoardManager
           {
             if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R1_Wall"; // Replace with Wall + map[x][y].getRegion()
             else if( map[x][y].getRegion() == 2) mesh_name = "WALLS/R2_Wall";
-            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/R3_Wall";
+            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/Cloth_Wall_2";
             else mesh_name = "WALLS/R3_Wall";
 
             wall.setMesh( MeshManager.getMesh(mesh_name));
@@ -125,7 +139,7 @@ public class BoardManager
           {
             if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R1_Peninsula"; // Replace with Wall + map[x][y].getRegion()
             else if( map[x][y].getRegion() == 2) mesh_name = "WALLS/R2_Peninsula";
-            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/R3_Peninsula";
+            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/Cloth_Wall_2";
             else mesh_name = "WALLS/R3_Peninsula";
 
             wall.setMesh( MeshManager.getMesh(mesh_name) );
@@ -140,7 +154,7 @@ public class BoardManager
           {
             if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R1_Corner"; // Replace with Wall + map[x][y].getRegion()
             else if( map[x][y].getRegion() == 2) mesh_name = "WALLS/R2_Corner";
-            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/R3_Corner";
+            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/Cloth_Pillar";
             else mesh_name = "WALLS/R3_Corner";
             wall.setMesh( MeshManager.getMesh(mesh_name) );
             temp_material= new PhongMaterial( ((PhongMaterial) MeshManager.getMaterial(mesh_name)).getDiffuseColor() );
@@ -186,10 +200,12 @@ public class BoardManager
           {
             MeshView pillar = new MeshView();
 
-            if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R2_Obstacle"; // Replace with Wall + map[x][y].getRegion()
+            if( map[x][y].getRegion() == 1) mesh_name = "WALLS/R4_Obstacle"; // Replace with Wall + map[x][y].getRegion()
             else if( map[x][y].getRegion() == 2) mesh_name = "WALLS/R2_Obstacle";
-            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/R2_Obstacle";
-            else mesh_name = "WALLS/R2_Obstacle";
+            else if( map[x][y].getRegion() == 3) mesh_name = "WALLS/Cloth_Pillar"; //"WALLS/R3_Obstacle";
+            else mesh_name = "WALLS/R1_Obstacle";
+
+            if( map[x][y].getRegion() <= 2) pillar.setRotate( Math.random()*360 ); // Any direction is okay for these.
 
             pillar.setMesh( MeshManager.getMesh(mesh_name) );
             pillar.setScaleX(8);
@@ -199,7 +215,6 @@ public class BoardManager
             pillar.setTranslateZ(y*10);
             pillar.setTranslateY(20);
             pillar.setRotationAxis(Rotate.Y_AXIS);
-            pillar.setRotate( Math.random()*360 ); // Any direction is okay for the pillars.
             GameMain.game_root.getChildren().add(pillar);
 
 

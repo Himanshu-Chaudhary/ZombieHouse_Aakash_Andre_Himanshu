@@ -7,6 +7,7 @@ import input.InputHandler;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Mesh;
@@ -27,10 +28,12 @@ public class Zombie extends Entity
   public MeshView healthbar;
   private Entity target;
 
-  public Zombie( int x, int y, int z )
+  public Zombie( int x, int y, int z, PhongMaterial material )
   {
-    super.name = "PLAYER";
-    super.state = "RUN";
+    this.material = new PhongMaterial( Color.WHITE );
+    this.material.setDiffuseMap( material.getDiffuseMap() );
+    super.name = "ZOMBIE";
+    super.state = "IDLE";
     super.priority = 0;
 
     super.state_timer = System.currentTimeMillis();
@@ -60,7 +63,6 @@ public class Zombie extends Entity
     super.position_z = z;
     this.position_start = new Integer[]{x,y,z};
 
-    super.material = new PhongMaterial( Color.RED );
     super.meshview = new MeshView();
     super.meshview.setMesh( null );
   }
@@ -73,7 +75,7 @@ public class Zombie extends Entity
     I don't just remove from zombies, because when I restart the level on death the way it's set up right now
     makes removing each zombie early a pain in the rear. Cutting it off here reduces most of the processing cost
     anyhow so it's probably fine. */
-    if( super.health <= 0 ){ return; }
+    //if( super.health <= 0 ){ return; }
 
     double dt_ms = time - super.update_timer;
     this.decision_timer += dt_ms;
@@ -82,6 +84,7 @@ public class Zombie extends Entity
     String state_backup = super.state;
 
     instigateAttack();
+    instigateDie();
     if( this.decision_timer > 2000 ) updateDirection();
 
     if(!state_backup.equals( super.state ))
@@ -93,12 +96,14 @@ public class Zombie extends Entity
 
     double d = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
     d = d>100? 0 : 1-d/100;
-    this.material.setDiffuseColor( Color.color(d,0,0));
+    this.material.setDiffuseColor( Color.color(d,d,d));
     ((PhongMaterial) this.healthbar.getMaterial()).setDiffuseColor( Color.color(d,d,d));
     super.display( dt_ms );
+    this.meshview.setMaterial( this.material );
     this.drawHealthbar( );
-    if( super.state.equals("RUN") ) { run(dt_ms); }
+    if( super.state.equals("WALK") ) { walk(dt_ms); }
     if( super.state.equals("ATTACK")) { attack( dt_ms ); }
+    if( super.state.equals("DIE")){ die(dt_ms); }
 
     super.update_timer = time;
   }
@@ -110,16 +115,18 @@ public class Zombie extends Entity
     this.healthbar.setTranslateZ( super.position_z );
     this.healthbar.setRotationAxis(Rotate.Y_AXIS );
     this.healthbar.setRotate( super.direction+180 );
+    if(this.health < 0) this.health = 0;
     this.healthbar.setMaterial(MaterialsManager.HEALTHBAR_MATERIALS[ (int) (super.health/7.5) ]);
-
   }
 
   // Points towards the closest player on the list, I hope.
   private void updateDirection()
   {
+    if( super.health <= 10) return; // Don't update if we're dead.
+
     this.decision_timer = 0;
-    this.proposeState("RUN", 0, 1);
-    super.speed = 0.5;
+    this.proposeState("WALK", 0, 1);
+    super.speed = 0.2;
     if ( this.isLineWalkZombie && this.speed == 0){ this.direction = Math.random()*360; }
     else if ( !this.isLineWalkZombie ){ this.direction = Math.random()*360; }
 
@@ -163,6 +170,22 @@ public class Zombie extends Entity
     }
   }
 
+  private void instigateDie()
+  {
+    if( super.health <= 0)
+    {
+      super.proposeState("DIE", 2,2);
+    }
+  }
+
+  private void die(double dt)
+  {
+    if ( this.state_timer > 120)
+    {
+      super.proposeState("DEAD",3,3);
+    }
+  }
+
   private void instigateAttack() {
     // Pick the closest player and try to attack it.
     double dist;
@@ -187,7 +210,7 @@ public class Zombie extends Entity
   private void attack(double dt)
   {
     super.direction = Math.toDegrees(Math.atan2( super.position_x-target.position_x, super.position_z-target.position_z));
-    if( super.state_timer > 400 )
+    if( super.state_timer > 300 )
     {
       // We only damage the player, because we don't care about past player's health.
       double distance = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
@@ -196,12 +219,12 @@ public class Zombie extends Entity
         GameMain.player.health -= 0.5;
       }
     }
-    if( super.state_timer > 600) // 600 ms for attack to complete.
+    if( super.state_timer > 850) // 600 ms for attack to complete.
     {
       super.proposeState("IDLE", 0, 2);
     }
   }
-  private void run(double dt)
+  private void walk(double dt)
   {
     double z_component = -Math.cos( Math.toRadians(this.direction));
     double x_component = -Math.sin( Math.toRadians(this.direction));

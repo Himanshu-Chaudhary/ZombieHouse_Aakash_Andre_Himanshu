@@ -4,6 +4,7 @@ import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import entities.Entity;
 import javafx.scene.Node;
 import javafx.scene.paint.Material;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 
@@ -25,6 +26,11 @@ public class MeshManager
     animation_start_and_finish.put("PLAYER_RUN", new Integer[]{0, 12});
     animation_start_and_finish.put("PLAYER_ATTACK", new Integer[]{0, 40});
     animation_start_and_finish.put("PLAYER_WALK", new Integer[]{1, 32});
+    animation_start_and_finish.put("ZOMBIE_IDLE", new Integer[]{0, 1});
+    animation_start_and_finish.put("ZOMBIE_WALK", new Integer[]{0, 40});
+    animation_start_and_finish.put("ZOMBIE_ATTACK", new Integer[]{0, 35});
+    animation_start_and_finish.put("ZOMBIE_DIE", new Integer[]{0, 13});
+    animation_start_and_finish.put("ZOMBIE_DEAD", new Integer[]{0, 1});
   }
 
   public static Mesh updateMesh ( Entity e )
@@ -39,6 +45,9 @@ public class MeshManager
     if( meshes.containsKey(mesh_name) ) return meshes.get(mesh_name);
     importer.read(mesh_name);
     Mesh mesh = importer.getImport()[0].getMesh();
+    PhongMaterial m = (PhongMaterial) getMaterial( String.format("%s/%s_%06d", e.name, animation_name, display_frame));
+    // Once upon a time I thought we might have time to implement neat changing textures per mesh but maybe not this time.
+    //if( m != null) e.material = (PhongMaterial) getMaterial( String.format("%s/%s_%06d", e.name, animation_name, display_frame));
     meshes.put( mesh_name, mesh );
     return mesh;
   }

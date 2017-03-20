@@ -6,6 +6,33 @@ import javafx.scene.paint.PhongMaterial;
 
 public class MaterialsManager
 {
+
+  public static final PhongMaterial PLAYER_MATERIAL = new PhongMaterial(
+          Color.WHITE, null, null, null,null);
+
+  public static final PhongMaterial PAST_PLAYER_MATERIAL = new PhongMaterial(
+          Color.WHITE, null, null, null,null);
+
+  public static final PhongMaterial[] ZOMBIE_MATERIALS = new PhongMaterial[]
+          {
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/images/z_texture_1.png"),
+                          null, null,null),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/images/z_texture_2.png"),
+                          null, null,null),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/images/z_texture_3.png"),
+                          null, null,null),
+                  new PhongMaterial(
+                          Color.WHITE,
+                          new Image("File:ZombieHouse/src/images/z_texture_4.png"),
+                          null, null,null)
+          };
+
   // Admittedly this wastes space by importing healthbar images twice.
   public static final PhongMaterial[] HEALTHBAR_MATERIALS = new PhongMaterial[]
           {
@@ -96,7 +123,7 @@ public class MaterialsManager
                           null, //new Image("File:ZombieHouse/src/images/wood_compress.png", 400, 400, true, true, false), // Diffuse
                           null, //new Image("File:ZombieHouse/src/images/checker_specular.jpg", 128, 128, true, true, false), // Specular
                           null, //new Image("File:ZombieHouse/src/images/checker_normal.jpg", 128, 128, true, true, false), // Normal/Bump
-                          null // Self-Illuminationw
+                          null // Self-Illumination
                   ),
                   new PhongMaterial( Color.WHITE,
                           null, //new Image("File:ZombieHouse/src/images/tile_compress.png", 400, 400, true, true, false), // Diffuse

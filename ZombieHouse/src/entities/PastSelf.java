@@ -1,6 +1,9 @@
 package entities;
 
 import general.GameMain;
+import general.MaterialsManager;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.MeshView;
 
@@ -18,6 +21,8 @@ public class PastSelf extends Entity
 
   public PastSelf (List<Double> ppx, List<Double> ppz, List<String> ss, List<Double> pd)
   {
+    super.material = new PhongMaterial(Color.CYAN);
+    super.material.setDiffuseMap(MaterialsManager.PAST_PLAYER_MATERIAL.getDiffuseMap());
     super.name = "PLAYER";
     this.past_position_x = ppx;
     this.past_position_z = ppz;
@@ -39,8 +44,10 @@ public class PastSelf extends Entity
 
   public void update( double time )
   {
+    super.meshview.setMaterial( super.material );
     double dt_ms = time - super.update_timer;
     state_timer += dt_ms;
+
     if( currentStep < totalStep )
     {
       String state_backup = super.state;

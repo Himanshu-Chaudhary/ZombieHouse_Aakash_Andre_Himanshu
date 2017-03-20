@@ -33,14 +33,14 @@ public class MyCamera
 
     if (GameMain.player.state.equals("RUN"))
     {
-      camera.setFieldOfView((125+5*camera.getFieldOfView())/6.0);
-      cameraXform.rz.setAngle((5*cameraXform.rz.getAngle()+35)/6.0);
+      camera.setFieldOfView((125+8*camera.getFieldOfView())/9.0);
+      cameraXform.rz.setAngle((8*cameraXform.rz.getAngle()+35)/9.0);
 
     }
     else
     {
-      camera.setFieldOfView((105+10*camera.getFieldOfView())/11.0);
-      cameraXform.rz.setAngle(cameraXform.rz.getAngle()/1.1);
+      camera.setFieldOfView((105+20*camera.getFieldOfView())/21.0);
+      cameraXform.rz.setAngle(cameraXform.rz.getAngle()/1.05);
 
     }
 

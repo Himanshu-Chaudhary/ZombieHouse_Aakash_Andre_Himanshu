@@ -21,12 +21,12 @@ public class Player extends Entity
   public List<String> past_states = new ArrayList<>();
   public MeshView healthbar;
 
-  private double stamina = 0; // Maybe a heartbeat plays subtly here. Faster means less stamina left.
+  private double stamina = 100; // Maybe a heartbeat plays subtly here. Faster means less stamina left.
                               // This should also be a function of one's health - that is, you can't run
                               // for as long if you're dying.
 
-  private double stamina_decay = 0.2;
-  private double stamina_regen = 0.2;
+  private double stamina_decay = 0.3;
+  private double stamina_regen = 0.25;
 
   public Player( int x, int y, int z )
   {
@@ -47,7 +47,8 @@ public class Player extends Entity
     super.position_y = y;
     super.position_z = z;
 
-    super.material = new PhongMaterial( Color.MAGENTA );
+    super.material = new PhongMaterial( Color.WHITE );
+    super.material.setDiffuseMap( MaterialsManager.PLAYER_MATERIAL.getDiffuseMap() );
     super.meshview = new MeshView();
     super.meshview.setMesh( null );
 
@@ -114,7 +115,7 @@ public class Player extends Entity
     if( super.state.equals("WALK"))
     {
       this.speed = 0.3;
-      if( this.stamina < super.health )
+      if( this.stamina < 2*super.health )
       {
         stamina += stamina_regen;
       }

@@ -5,19 +5,12 @@ import entities.PastSelf;
 import entities.Zombie;
 import entities.Player;
 import camera.MyCamera;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 import map_generation.BoardManager;
 import map_generation.Tile;
 import map_generation.ProceduralMap;
@@ -51,6 +44,9 @@ public class GameMain extends Application
 
   private static Timeline menu_timeline;
   private static Group menu_root;
+
+  private int level = 1;
+  private int lives = 3;
 
   Scene menu;
 
@@ -112,7 +108,7 @@ public class GameMain extends Application
 
     player = new Player(20,40,20);
     players.add( player );
-    //spawnZombies();
+    spawnZombies();
 
     my_camera = new MyCamera();
     Scene scene = new Scene( game_root, 1024, 768, true );
@@ -126,41 +122,39 @@ public class GameMain extends Application
 
   private void spawnZombies()
   {
+    Zombie z;
     for(int x = 0; x < board_size-1; x++)
     {
       for(int y = 0; y < board_size-1; y++)
       {
         if(map[x][y].isWall || map[x][y].isHallway || map[x][y].isBorder || map[x][y].isObstacle){}
-        else if (Math.random() > 0.98){ zombies.add( new Zombie(x*10,40,y*10)); }
+        else if (Math.random() > 0.98)
+        {
+          z = new Zombie(x*10,40,y*10, MaterialsManager.ZOMBIE_MATERIALS[(int)(Math.random()*3)]);
+          zombies.add( z );
+        }
       }
     }
   }
 
-  // Fade out the brightness of the board, depending on proximity to player and past players.
+  // Fade out the brightness of the board, depending on proximity to the player.
   private void fadeBoard()
   {
     double d; // Distance to player.
     double dist;
-    double min_dist;
     for(int x = 0; x < board_size; x++)
     {
       for(int y = 0; y < board_size; y++)
       {
-        min_dist = 999;
         if(board_boxes[0][x][y] != null && board_boxes[0][x][y].getMaterial() != null )
         {
-          for( Entity p : players )
-          {
-            dist = Math.sqrt(Math.pow(p.position_x-x*10,2)+Math.pow(p.position_z-y*10,2));
-            if(dist < min_dist) min_dist = dist;
-          }
-
-          d = min_dist;
-          d = d/100;
+          dist = Math.sqrt(Math.pow(player.position_x-x*10,2)+Math.pow(player.position_z-y*10,2));
+          d = dist;
+          d = d/80;
           if ( d > 1) d = 1;
           d = 1-d;
-          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setDiffuseColor( Color.color(d/1.2,d/1.1   ,d) );
-          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setSpecularColor( Color.color(d,d,d) );
+          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setDiffuseColor(Color.color(d,d,d));
+          ((PhongMaterial) board_boxes[0][x][y].getMaterial()).setSpecularColor(Color.color(d,d,d));
           if( board_boxes[1][x][y] != null && board_boxes[1][x][y].getMaterial() != null)
           {
             ((PhongMaterial) board_boxes[1][x][y].getMaterial()).setDiffuseColor(Color.color(d/3, d/3, d/3));
@@ -179,7 +173,7 @@ public class GameMain extends Application
     {
       if (z.health <= 0)
       {
-        game_root.getChildren().remove( z.meshview );
+        // Zombie bodies are going to persist, so don't remove em.
         game_root.getChildren().remove( z.healthbar );
       }
     }
@@ -217,6 +211,7 @@ public class GameMain extends Application
 
   private void playerDied()
   {
+    // On dying, swap scene instantly, so I don't need to show death animation.
     ArrayList<Integer[]> start_positions = new ArrayList<>();
 
     // Remove all zombies.
@@ -228,7 +223,7 @@ public class GameMain extends Application
     zombies.removeAll(zombies);
 
     // Add the zombies back in.
-    for( Integer[] sp : start_positions ){ zombies.add( new Zombie(sp[0], sp[1], sp[2] )); }
+    for( Integer[] sp : start_positions ){ zombies.add( new Zombie(sp[0], sp[1], sp[2], MaterialsManager.ZOMBIE_MATERIALS[(int)(Math.random()*3)] )); }
 
     for( Entity p : players ){ game_root.getChildren().remove( p.meshview ); }
     game_root.getChildren().remove( player.healthbar );
@@ -249,7 +244,9 @@ public class GameMain extends Application
   }
   private void exitReached()
   {
-    //game_root.getChildren().removeAll(game_root.getChildren());
+
+    level++; // This affects the difficulty in the map building (obstacle frequency).
+
     // Remove all zombies.
     for (Zombie z : zombies)
     {
@@ -265,7 +262,7 @@ public class GameMain extends Application
     players.removeAll(players);
 
     // Create a new map.
-    map = ProceduralMap.generateMap( board_size, board_size, 2 );
+    map = ProceduralMap.generateMap( board_size, board_size, 1+level );
     BoardManager.removeMapMeshes( game_root );
     BoardManager.addMapMeshes( board_boxes, map, game_root );
     BoardManager.configurePathNodes( map, path_nodes );
