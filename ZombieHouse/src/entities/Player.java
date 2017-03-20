@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
+import sound.SoundManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class Player extends Entity
   public List<Double> past_direction = new ArrayList<>();
   public List<String> past_states = new ArrayList<>();
   public MeshView healthbar;
+  public SoundManager soundManager = new SoundManager();
 
   private double stamina = 100; // Maybe a heartbeat plays subtly here. Faster means less stamina left.
                               // This should also be a function of one's health - that is, you can't run
@@ -197,20 +199,28 @@ public class Player extends Entity
       }
       super.position_x += x_component;
       super.position_z += z_component;
+      soundManager.playPlayerFootStep();
     }
   }
   private void attack(double dt)
   {
-    if( super.state_timer > 400 )
+    if(GameMain.zombies.size()==0){
+      soundManager.playSwordSwing();
+    }
+
+    else if( super.state_timer > 400 )
     {
       double distance;
+
       for( Zombie z : GameMain.zombies )
       {
         distance = Math.sqrt( Math.pow(z.position_x-super.position_x,2)+Math.pow(z.position_z-super.position_z,2));
         if( distance < 30 )
         {
           z.health -= 1;
+          soundManager.playSwordHit();
         }
+        else soundManager.playSwordSwing();
       }
     }
     if( super.state_timer > 600) // 600 ms for attack to complete.
