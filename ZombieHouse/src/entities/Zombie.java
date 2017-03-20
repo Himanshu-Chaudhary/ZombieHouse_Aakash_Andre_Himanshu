@@ -14,6 +14,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import pathfinding.PathNode;
 import pathfinding.Pathfinding;
+import sound.SoundManager;
 
 import java.util.Map;
 import java.util.Random;
@@ -26,6 +27,7 @@ public class Zombie extends Entity
   public Integer[] position_start;
   public MeshView healthbar;
   private Entity target;
+  private SoundManager soundManager = new SoundManager();
 
   public Zombie( int x, int y, int z )
   {
@@ -219,6 +221,39 @@ public class Zombie extends Entity
       super.position_x += x_component*super.speed;
       super.position_z += z_component*super.speed;
     }
+    if(CalculateDistance() < 250) playGroan();
+  }
+
+  private void playGroan(){
+    if (Math.random() > 0.98) {
+      soundManager.playZombieGroan(CalculateDistance(),CalculateBalance());
+    }
+
+  }
+
+  private double CalculateDistance(){
+    double distance = 0;
+    double x_comp = GameMain.player.position_x - super.position_x;
+    double z_comp = GameMain.player.position_z - super.position_z;
+    distance = Math.sqrt(x_comp*x_comp + z_comp*z_comp);
+    return distance;
+  }
+
+  private double CalculateBalance(){
+    double balance = 0;
+    double x_comp = (GameMain.player.position_x - super.position_x) / CalculateDistance();
+    double z_comp = (GameMain.player.position_z - super.position_z)/CalculateDistance();
+
+    double x2_comp = Math.cos(Math.toRadians(GameMain.player.direction));
+    double z2_comp = Math.sin(Math.toRadians(GameMain.player.direction));
+
+    double dot_product = x_comp*x2_comp + z_comp*z2_comp;
+
+    balance = ( ( dot_product ) - 0.5) * 2;
+    //System.out.println(balance);
+
+    return balance;
+
   }
 
 
