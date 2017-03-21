@@ -30,7 +30,9 @@ public class MeshManager
     animation_start_and_finish.put("ZOMBIE_WALK", new Integer[]{0, 40});
     animation_start_and_finish.put("ZOMBIE_ATTACK", new Integer[]{0, 35});
     animation_start_and_finish.put("ZOMBIE_DIE", new Integer[]{0, 13});
+    animation_start_and_finish.put("PLAYER_DIE", new Integer[]{0, 13});
     animation_start_and_finish.put("ZOMBIE_DEAD", new Integer[]{0, 1});
+    animation_start_and_finish.put("PLAYER_DEAD", new Integer[]{0, 1});
   }
 
   public static Mesh updateMesh ( Entity e )

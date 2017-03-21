@@ -34,7 +34,7 @@ public class MaterialsManager
           };
     public static final PhongMaterial MASTER_ZOMBIE_MATERIALS = new PhongMaterial(
                             Color.WHITE,
-                            new Image("File:ZombieHouse/src/images/m3.png"),
+                            new Image("File:ZombieHouse/src/images/master_zombie_texture.png"),
                             null, null,null);
 
 
