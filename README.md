@@ -83,30 +83,8 @@ Multiple from
 
 ##### Sound sources:
 * http://freesound.org/
-* S: male_Thijs_loud_scream.aiff by thanvannispen | License: Attribution
-* S: rip_tear FLESH!!!!.wav by aust_paul | License: Creative Commons 0
-* S: Tearing Flesh by dereklieu | License: Attribution
-* S: Man die by thestigmata | License: Attribution Noncommercial
-* S: Zombie Attack by soykevin | License: Creative Commons 0
-* S: Click by RADIY | License: Attribution
-* S: btn121.wav by junggle | License: Attribution
-* S: Footstep Drag Indoors .wav by abbahoot | License: Creative Commons 0
-* S: Zombie Growling by gneube | License: Attribution
-* S: Zombie 1 by Under7dude | License: Creative Commons 0
-* S: Solo Zombie 1 by Slave2theLight | License: Attribution
-* S: Zombie 20 by missozzy | License: Attribution
-* S: Zombie by nanity05 | License: Creative Commons 0
-* S: Footsteps on Tiles.wav by RutgerMuller | License: Creative Commons 0
-* S: Slashkut by Abyssmal | License: Creative Commons 0
-* S: thud.wav by OtisJames | License: Creative Commons 0
-* S: GRUNT 2.wav by vmgraw | License: Creative Commons 0
-
+* http://www.pacdv.com/sounds/voices-1.html
 * http://soundbible.com/
-* S: http://soundbible.com/706-Swoosh-3.html
-
-##### Music sources:
-* Harbinger of Death by Purple-Planet Music
-* http://www.purple-planet.com/horror/4583971268
 
 ---
 ## Known Bugs / Missing Features
