@@ -126,7 +126,7 @@ public class Zombie extends Entity
   // Points towards the closest player on the list, I hope.
   private void updateDirection()
   {
-    if( super.health <= 10) return; // Don't update if we're dead.
+    if( super.health <= 0) return; // Don't update if we're dead.
 
     this.decision_timer = 0;
     this.proposeState("WALK", 0, 1);
