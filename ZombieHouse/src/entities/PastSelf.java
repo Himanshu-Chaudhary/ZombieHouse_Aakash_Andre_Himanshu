@@ -84,6 +84,7 @@ public class PastSelf extends Entity
         this.proposeState("DEAD", 0, 10);
         display( dt_ms );
         currentStep++;
+        System.out.println("Already Dead");
 
       }
     }
