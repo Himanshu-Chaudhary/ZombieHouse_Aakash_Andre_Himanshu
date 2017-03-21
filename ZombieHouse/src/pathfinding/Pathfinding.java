@@ -1,7 +1,9 @@
-package pathfinding;/*
-    Andre' Green
-    This class simply generates a map with the shortest path.
+package pathfinding;
+/**
+ * @author Andre' Green
+ * This class simply generates a map with the shortest path.
  */
+
 import java.util.*;
 
 public class Pathfinding

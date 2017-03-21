@@ -20,6 +20,12 @@ import sound.SoundManager;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * @author Himanshu Chaudhary, Andre' Green, Aakash Basnet
+ *
+ * has all the settings and attributes for zombies in the game
+ */
+
 public class Zombie extends Entity
 {
   private double decision_timer;
@@ -71,6 +77,9 @@ public class Zombie extends Entity
     super.meshview.setMesh( null );
   }
 
+  /**
+   * Sets the enhancements for the Master Zombie
+   */
   public void makeMaster(){
   super.health = 30;
   super.damage = 1;
@@ -79,15 +88,15 @@ public class Zombie extends Entity
 
 }
 
+  /**
+   * @param time
+   *      the time at which the update takes place
+   *
+   * Updates the state of the zombie and then changes its behaviour and mesh based upon its state
+   */
   @Override
   public void update(double time)
   {
-
-    /* Return prematurely if we're dead.
-    I don't just remove from zombies, because when I restart the level on death the way it's set up right now
-    makes removing each zombie early a pain in the rear. Cutting it off here reduces most of the processing cost
-    anyhow so it's probably fine. */
-    //if( super.health <= 0 ){ return; }
 
     double dt_ms = time - super.update_timer;
     this.decision_timer += dt_ms;
@@ -121,6 +130,9 @@ public class Zombie extends Entity
   }
 
 
+  /**
+   * draws healthbar on the floor sorrounding the zombie
+   */
   private void drawHealthbar()
   {
     this.healthbar.setTranslateX( super.position_x );
@@ -131,7 +143,9 @@ public class Zombie extends Entity
     this.healthbar.setMaterial(MaterialsManager.HEALTHBAR_MATERIALS[ (int) (super.health/7.5) ]);
   }
 
-  // Points towards the closest player on the list, I hope.
+  /**
+   * points towaards the closest player
+   */
   private void updateDirection()
   {
     if( super.health <= 0) return; // Don't update if we're dead.
@@ -150,8 +164,6 @@ public class Zombie extends Entity
 
     for( Entity p : GameMain.players )
     {
-      //double dist = Math.sqrt( Math.pow(p.position_x-super.position_x,2)+Math.pow(p.position_z-super.position_z,2));
-      //if(dist > 200){ continue; } // Don't bother searching for the player if we're too far away anyway.
       if (p instanceof PastSelf && ((PastSelf) p).isDead())
       {
       } else
@@ -172,7 +184,7 @@ public class Zombie extends Entity
         if (path_length > 1 && path_length < this.smell_range && super.position_x - ((int) ((super.position_x + 5) / 10.0)) * 10 <= 5 &&
                 super.position_z - ((int) ((super.position_z + 5) / 10.0)) * 10 <= 5 && path_length < best_length)
         {
-          // ... then move towards the targeted path node.
+          //  then move towards the targeted path node.
           best_length = path_length;
           dx = super.position_z - path.get(myNode).y * 10;
           dy = super.position_x - path.get(myNode).x * 10;
@@ -182,6 +194,9 @@ public class Zombie extends Entity
     }
   }
 
+  /**
+   * changes the state to die for dying animation
+   */
   private void instigateDie()
   {
     if( super.health <= 0)
@@ -190,6 +205,11 @@ public class Zombie extends Entity
     }
   }
 
+  /**
+   * @param dt
+   *
+   * changes the state to dead so that the zombie lays on the ground
+   */
   private void die(double dt)
   {
     if ( this.state_timer > 120)
@@ -198,6 +218,9 @@ public class Zombie extends Entity
     }
   }
 
+  /**
+   * picks the closest player and tries to attack it
+   */
   private void instigateAttack() {
     // Pick the closest player and try to attack it.
     double dist;
@@ -219,12 +242,17 @@ public class Zombie extends Entity
     }
   }
 
+  /**
+   * @param dt
+   *
+   * tries to attack and then the health point is also deducted based upon zombie's damage points
+   */
   private void attack(double dt)
   {
     super.direction = Math.toDegrees(Math.atan2( super.position_x-target.position_x, super.position_z-target.position_z));
     if( super.state_timer > 300 )
     {
-      // We only damage the player, because we don't care about past player's health.
+      // only damage the player, because no need to  care about past player's health.
       double distance = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
       if( distance < 20 )
       {
@@ -238,6 +266,8 @@ public class Zombie extends Entity
       super.proposeState("IDLE", 0, 2);
     }
   }
+
+
   private void walk(double dt)
   {
     double z_component = -Math.cos( Math.toRadians(this.direction));
@@ -285,7 +315,6 @@ public class Zombie extends Entity
     double dot_product = x_comp*x2_comp + z_comp*z2_comp;
 
     balance = ( ( dot_product ) - 0.5) * 2;
-    //System.out.println(balance);
 
     return balance;
 

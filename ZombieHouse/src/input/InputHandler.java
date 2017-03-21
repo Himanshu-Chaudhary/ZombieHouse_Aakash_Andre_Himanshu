@@ -15,6 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * @author Andre' Green
+ *
+ * handles input which is used to update the game
+ */
+
 public class InputHandler
 {
     private static Map<KeyCode,Boolean> isDown_map = new HashMap<>();
@@ -27,17 +33,19 @@ public class InputHandler
     private static double mouse_dx = 0;
     private static double mouse_dy = 0;
 
-    // This is sort of a hack. I'll try to find a better way to do this.
-    // Actually all we need is a flip-flop mechanism between true and false.
-    // if the flip-flop value in memory is the same, don't update. If it isn't, do update.
+    /*  A flip-flop mechanism is uses to switch between true and false.
+     if the flip-flop value in memory is the same, don't update. If it isn't, do update. */
     private static double drift_prevention = 0;
     private static Random random = new Random();
 
-    /*----------------------------------------------------------------
-    Scene scene : The scene to which we listen for mouse & keyboard events.
-    This method updates all the variables within this class according
-    to the status of the keyboard and mouse.
-    ----------------------------------------------------------------*/
+
+    /**
+     * @param scene
+     * The scene to which we listen for mouse & keyboard events.
+     *
+     * This method updates all the variables within this class according
+     * to the status of the keyboard and mouse.
+     */
     public static void setUpInputHandler( Scene scene )
     {
         scene.setOnKeyPressed(event -> isDown_map.put(event.getCode(), true));
@@ -74,21 +82,22 @@ public class InputHandler
         });
     }
 
-    /*----------------------------------------------------------------
-    KeyCode keycode : The code for the key you wish to query. (e.g. KeyCode.A)
-    This method just returns true/false depending on whether that key is down.
-    The method also returns false if the key is not present in the map.
-    ----------------------------------------------------------------*/
+
+    /**
+     * @param keycode
+     * The code for the key you wish to query. (e.g. KeyCode.A)
+     * @return
+     *  This method just returns true/false depending on whether that key is down.
+     *  The method also returns false if the key is not present in the map.
+     */
     public static boolean isKeyDown( KeyCode keycode )
     {
         if( !isDown_map.containsKey(keycode) ) return false;
         return isDown_map.get(keycode);
     }
 
-    /*----------------------------------------------------------------
-    No input arguments for each of these - they simply return information
-    about the state of the mouse (e.g. position, which buttons are down, etc).
-    ----------------------------------------------------------------*/
+    /* No input arguments for each of these - they simply return information
+    about the state of the mouse (e.g. position, which buttons are down, etc).*/
     public static boolean isMouseLeftDown()
     {
         return mouse_left_down;
@@ -107,12 +116,10 @@ public class InputHandler
     }
     public static double getDriftPrevention() { return drift_prevention; }
 
-    /*---------------------------------------------------------------
-    int screenX, screenY : The location on the computer screen (not the
+    /* int screenX, screenY : The location on the computer screen (not the
     JavaFX window) to which the cursor is going to move.
     This itself counts as a mouse movement, though, so we have to be
-    careful not to count it at being an actual motion from the user.
-     ---------------------------------------------------------------*/
+    careful not to count it at being an actual motion from the user. */
     private static void moveCursor(int screenX, int screenY) {
         Platform.runLater(() -> {
             try {

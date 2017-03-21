@@ -1,8 +1,8 @@
 package pathfinding;
 
-/*
-    Andre' Green
-    This class is used so we can mess with priority queues in the pathfinding class.
+/**
+ * @author Andre' Green
+ * This class is used so we can mess with priority queues in the pathfinding class.
  */
 public class PathNode implements Comparable<PathNode>
 {
