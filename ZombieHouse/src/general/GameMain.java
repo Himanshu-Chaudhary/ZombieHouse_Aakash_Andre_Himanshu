@@ -29,6 +29,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import pathfinding.PathNode;
+import sound.SoundManager;
+
 import java.util.ArrayList;
 
 
@@ -53,10 +55,11 @@ public class GameMain extends Application
 
   private int level = 1;
   private int lives = 3;
-
+  private SoundManager soundManager = new SoundManager();
   Scene menu;
 
   public static Player player;
+
   MyCamera my_camera;
 
   @Override public void start( Stage stage )
@@ -179,7 +182,8 @@ public class GameMain extends Application
   {
     if(stage.getScene().equals( menu ) && !override ) return;
 
-    if( player.health <= 0){ playerDied(); }
+    if( player.health <= 0){
+      playerDied(); }
     for( Zombie z : zombies)
     {
       if (z.health <= 0)
@@ -257,7 +261,7 @@ public class GameMain extends Application
   }
   private void exitReached()
   {
-
+    soundManager.playExit();
     level++; // This affects the difficulty in the map building (obstacle frequency).
 
     // Remove all zombies.

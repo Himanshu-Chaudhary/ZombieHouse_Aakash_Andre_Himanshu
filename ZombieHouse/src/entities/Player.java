@@ -201,6 +201,7 @@ public class Player extends Entity
       super.position_x += x_component;
       super.position_z += z_component;
 
+      if(Math.random() > 0.98) soundManager.playPlayerSound();
 
       if(this.stamina < 10) soundManager.playHeartBeat();
       soundManager.playPlayerFootStep();

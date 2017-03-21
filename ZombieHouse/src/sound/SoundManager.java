@@ -8,6 +8,7 @@ import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class SoundManager
 
   private final int FOOTSTEPS = 10;
   private final int GROANS = 4;
+  private final int PLAYER_SOUNDS= 7;
   private Map<String, AudioClip> sounds;
   private MediaPlayer mp;
 
@@ -33,51 +35,67 @@ public class SoundManager
    */
   public SoundManager(){
     sounds = new HashMap<>();
-    initializeSound();
+    try
+    {
+      initializeSound();
+    }
+    catch (MalformedURLException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   /**
    * This method reads the sounds from the resourses and
    * puts calls the loadSound method.
    */
-  private void initializeSound(){
+  private void initializeSound() throws MalformedURLException{
     String name ="";
     URL url = null;
 
     name = "footstep";
     for (int i = 0; i < FOOTSTEPS; i++){
-      url = getClass().getResource(name + i + ".wav");
+      url = new URL("File:ZombieHouse/resources/sounds/"+ name + i + ".wav");
+      //System.out.println(url);
       loadSoundClip(name + i, url);
+
+    }
+    name = "playerSound";
+    for (int i = 0; i < PLAYER_SOUNDS; i++){
+      url = new URL("File:ZombieHouse/resources/sounds/"+ name + i + ".wav");
+      //System.out.println(url);
+      loadSoundClip(name + i, url);
+
     }
 
     name = "groan";
     for (int i = 0; i < GROANS; i++){
-      url = getClass().getResource(name + i + ".wav");
+      url = new URL("File:ZombieHouse/resources/sounds/"+ name + i + ".wav");
       loadSoundClip(name + i, url);
     }
 
     name = "death";
-    url = getClass().getResource(name + ".wav");
+    url = new URL("File:ZombieHouse/resources/sounds/"+ name + ".wav");
     loadSoundClip(name, url);
 
     name = "heartbeat1";
-    url = getClass().getResource(name + ".wav");
+    url = new URL("File:ZombieHouse/resources/sounds/"+ name + ".wav");
     loadSoundClip(name, url);
 
     name = "sword_hit";
-    url = getClass().getResource(name + ".wav");
+    url = new URL("File:ZombieHouse/resources/sounds/"+ name + ".wav");
     loadSoundClip(name, url);
 
     name = "sword_swing";
-    url = getClass().getResource(name + ".wav");
+    url = new URL("File:ZombieHouse/resources/sounds/"+ name + ".wav");
     loadSoundClip(name, url);
 
     name = "zombiePunch";
-    url = getClass().getResource(name + ".wav");
+    url = new URL("File:ZombieHouse/resources/sounds/"+ name + ".wav");
     loadSoundClip(name, url);
 
     name = "exit";
-    url = getClass().getResource(name + ".wav");
+    url = new URL("File:ZombieHouse/resources/sounds/"+ name + ".wav");
     loadSoundClip(name, url);
   }
 
@@ -97,9 +115,24 @@ public class SoundManager
    * This methods plays the sound of Zombie hitting.
    */
   public void playZombiePunch(){
-    double volume = 0.1;
+    double volume = 0.2;
     AudioClip clip = sounds.get("zombiePunch");
     clip.play(volume,0,1,0,1);
+  }
+
+  /**
+   * This method plays random voice for the player
+   */
+  public void playPlayerSound()
+  {
+    if(Math.random() > 0.90)
+    {
+      Random random = new Random();
+      double volume = 0.3;
+      int i = random.nextInt(PLAYER_SOUNDS);
+      AudioClip clip = sounds.get("playerSound" + i);
+      clip.play(volume, 0, 1, 0, 1);
+    }
   }
 
   /**
@@ -127,7 +160,7 @@ public class SoundManager
   {
 
     Random random = new Random();
-    double volume = (2/distance);
+    double volume = (1/distance);
     int i = random.nextInt(GROANS);
     AudioClip clip = sounds.get("groan" + i);
     clip.play(volume,balance,1,0,1);
@@ -139,7 +172,7 @@ public class SoundManager
    */
   public void playPlayerDeath()
    {
-     double volume = 0.3;
+     double volume = 0.5;
      AudioClip clip = sounds.get("death");
      clip.play(volume,0,1,0,1);
 
@@ -171,7 +204,7 @@ public class SoundManager
    * This method plays the sound of sword swinging in the air.
    */
   public void playSwordSwing(){
-    double volume = 0.25;
+    double volume = 0.20;
     AudioClip clip = sounds.get("sword_swing");
     clip.play(volume,0,1,0,1);
   }
@@ -185,11 +218,4 @@ public class SoundManager
     AudioClip clip = sounds.get("exit");
     clip.play(volume,0,1,0,1);
   }
-
-
-
-
-
-
-
 }

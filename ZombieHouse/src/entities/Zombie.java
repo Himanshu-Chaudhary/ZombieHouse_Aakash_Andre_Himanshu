@@ -229,6 +229,8 @@ public class Zombie extends Entity
       if( distance < 20 )
       {
         GameMain.player.health -= this.damage;
+        if(GameMain.player.health <= 0) soundManager.playPlayerDeath();
+        soundManager.playZombiePunch();
       }
     }
     if( super.state_timer > 850) // 600 ms for attack to complete.
