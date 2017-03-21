@@ -28,6 +28,7 @@ public class Zombie extends Entity
   public Integer[] position_start;
   public MeshView healthbar;
   private Entity target;
+  private boolean isMaster;
   private SoundManager soundManager = new SoundManager();
 
   public Zombie( int x, int y, int z, PhongMaterial material )
@@ -37,6 +38,7 @@ public class Zombie extends Entity
     super.name = "ZOMBIE";
     super.state = "IDLE";
     super.priority = 0;
+    isMaster = false;
 
     super.state_timer = System.currentTimeMillis();
     super.frame_timer = super.state_timer;

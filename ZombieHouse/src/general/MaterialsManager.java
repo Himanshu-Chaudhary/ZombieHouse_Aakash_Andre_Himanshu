@@ -32,13 +32,11 @@ public class MaterialsManager
                           new Image("File:ZombieHouse/src/images/z_texture_4.png"),
                           null, null,null)
           };
-    public static final PhongMaterial[] MASTER_ZOMBIE_MATERIALS = new PhongMaterial[]
-            {
-                    new PhongMaterial(
+    public static final PhongMaterial MASTER_ZOMBIE_MATERIALS = new PhongMaterial(
                             Color.WHITE,
-                            new Image("File:ZombieHouse/src/images/master_zombie.png"),
-                            null, null,null)
-            };
+                            new Image("File:ZombieHouse/src/images/m3.png"),
+                            null, null,null);
+
 
 
   // Admittedly this wastes space by importing healthbar images twice.

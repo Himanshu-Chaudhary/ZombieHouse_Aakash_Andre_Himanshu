@@ -38,6 +38,7 @@ public class GameMain extends Application
 
   public static ArrayList<Entity> players = new ArrayList<>(); // Past & present.
   public static ArrayList<Zombie> zombies = new ArrayList<>();
+  public static Zombie masterZombie;
 
   public static int exit_x;
   public static int exit_z;
@@ -137,8 +138,8 @@ public class GameMain extends Application
 
 
     }
-    z = new Zombie(30,40,30,MaterialsManager.MASTER_ZOMBIE_MATERIALS[0]);
-    zombies.add( z );
+    masterZombie = new Zombie(30,40,30,MaterialsManager.MASTER_ZOMBIE_MATERIALS);
+    zombies.add( masterZombie );
   }
 
   // Fade out the brightness of the board, depending on proximity to the player.
@@ -220,14 +221,16 @@ public class GameMain extends Application
 
     // Remove all zombies.
     for (Zombie z : zombies){
-      start_positions.add( z.position_start );
+      if (z.position_start[0]!=30)  start_positions.add( z.position_start );
       game_root.getChildren().remove(z.meshview);
       game_root.getChildren().remove(z.healthbar);
     }
     zombies.removeAll(zombies);
 
     // Add the zombies back in.
-    for( Integer[] sp : start_positions ){ zombies.add( new Zombie(sp[0], sp[1], sp[2], MaterialsManager.ZOMBIE_MATERIALS[(int)(Math.random()*3)] )); }
+    for( Integer[] sp : start_positions ){
+      zombies.add( new Zombie(sp[0], sp[1], sp[2], MaterialsManager.ZOMBIE_MATERIALS[(int)(Math.random()*3)] ));}
+      zombies.add(masterZombie);
 
     for( Entity p : players ){ game_root.getChildren().remove( p.meshview ); }
     game_root.getChildren().remove( player.healthbar );
