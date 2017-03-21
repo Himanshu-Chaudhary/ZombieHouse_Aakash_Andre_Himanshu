@@ -107,7 +107,7 @@ public class GameMain extends Application
     BoardManager.addMapMeshes( board_boxes, map, game_root );
     BoardManager.configurePathNodes( map, path_nodes );
 
-    player = new Player(20,40,20);
+    player = new Player(exit_x,40,exit_z-30);
     players.add( player );
     spawnZombies();
 
@@ -138,7 +138,8 @@ public class GameMain extends Application
 
 
     }
-    masterZombie = new Zombie(30,40,30,MaterialsManager.MASTER_ZOMBIE_MATERIALS);
+    masterZombie = new Zombie(exit_x,40,exit_z-50,MaterialsManager.MASTER_ZOMBIE_MATERIALS);
+    masterZombie.makeMaster();
     zombies.add( masterZombie );
   }
 

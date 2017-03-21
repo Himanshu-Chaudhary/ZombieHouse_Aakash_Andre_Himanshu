@@ -20,7 +20,7 @@ public abstract class Entity
   public double frame;
 
   public int health;
-  public int damage;
+  public double damage;
   public double speed;
 
   public double direction;

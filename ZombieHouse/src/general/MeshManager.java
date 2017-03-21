@@ -22,17 +22,17 @@ public class MeshManager
   // Enter in the starting and ending frames for each animation.
   static
   {
-    animation_start_and_finish.put("PLAYER_IDLE", new Integer[]{0, 1});
-    animation_start_and_finish.put("PLAYER_RUN", new Integer[]{0, 12});
-    animation_start_and_finish.put("PLAYER_ATTACK", new Integer[]{0, 40});
-    animation_start_and_finish.put("PLAYER_WALK", new Integer[]{1, 32});
-    animation_start_and_finish.put("ZOMBIE_IDLE", new Integer[]{0, 1});
-    animation_start_and_finish.put("ZOMBIE_WALK", new Integer[]{0, 40});
-    animation_start_and_finish.put("ZOMBIE_ATTACK", new Integer[]{0, 35});
-    animation_start_and_finish.put("ZOMBIE_DIE", new Integer[]{0, 13});
-    animation_start_and_finish.put("PLAYER_DIE", new Integer[]{0, 13});
-    animation_start_and_finish.put("ZOMBIE_DEAD", new Integer[]{0, 1});
-    animation_start_and_finish.put("PLAYER_DEAD", new Integer[]{0, 1});
+    animation_start_and_finish.put("player_IDLE", new Integer[]{0, 1});
+    animation_start_and_finish.put("player_RUN", new Integer[]{0, 12});
+    animation_start_and_finish.put("player_ATTACK", new Integer[]{0, 40});
+    animation_start_and_finish.put("player_WALK", new Integer[]{1, 32});
+    animation_start_and_finish.put("zombie_IDLE", new Integer[]{0, 1});
+    animation_start_and_finish.put("zombie_WALK", new Integer[]{0, 40});
+    animation_start_and_finish.put("zombie_ATTACK", new Integer[]{0, 35});
+    animation_start_and_finish.put("zombie_DIE", new Integer[]{0, 13});
+    animation_start_and_finish.put("player_DIE", new Integer[]{0, 13});
+    animation_start_and_finish.put("zombie_DEAD", new Integer[]{0, 1});
+    animation_start_and_finish.put("player_DEAD", new Integer[]{0, 1});
   }
 
   public static Mesh updateMesh ( Entity e )
@@ -43,7 +43,7 @@ public class MeshManager
     int display_frame = (((int) e.frame)%num_frames) + start_frame;
 
     String mesh_name = String.format("%s%s/%s_%06d.obj",
-            "ZombieHouse/src/meshes/", e.name, animation_name, display_frame);
+            "ZombieHouse/resources/meshes/", e.name, animation_name, display_frame);
     if( meshes.containsKey(mesh_name) ) return meshes.get(mesh_name);
     importer.read(mesh_name);
     Mesh mesh = importer.getImport()[0].getMesh();
@@ -58,7 +58,7 @@ public class MeshManager
   {
     // Add the quick reference import here so we don't import a million times over.
     if( meshes.containsKey(name) ){ return meshes.get(name); }
-    importer.read("ZombieHouse/src/meshes/"+name+".obj");
+    importer.read("ZombieHouse/resources/meshes/"+name+".obj");
     Node[] temp = importer.getImport();
 
 
@@ -72,7 +72,7 @@ public class MeshManager
   public static Material getMaterial(String name )
   {
     if( materials.containsKey(name) ){ return materials.get(name); }
-    importer.read("ZombieHouse/src/meshes/"+name+".obj");
+    importer.read("ZombieHouse/resources/meshes/"+name+".obj");
     Node[] temp = importer.getImport();
     materials.put( name, ((MeshView) temp[0]).getMaterial());
     return ((MeshView) temp[0]).getMaterial();

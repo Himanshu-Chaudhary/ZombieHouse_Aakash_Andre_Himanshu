@@ -23,7 +23,7 @@ public class PastSelf extends Entity
   {
     super.material = new PhongMaterial(Color.CYAN);
     super.material.setDiffuseMap(MaterialsManager.PAST_PLAYER_MATERIAL.getDiffuseMap());
-    super.name = "PLAYER";
+    super.name = "player";
     this.past_position_x = ppx;
     this.past_position_z = ppz;
     this.position_y = 40;

@@ -35,7 +35,7 @@ public class Zombie extends Entity
   {
     this.material = new PhongMaterial( Color.WHITE );
     this.material.setDiffuseMap( material.getDiffuseMap() );
-    super.name = "ZOMBIE";
+    super.name = "zombie";
     super.state = "IDLE";
     super.priority = 0;
     isMaster = false;
@@ -46,7 +46,7 @@ public class Zombie extends Entity
     this.decision_timer = super.update_timer;
 
     super.health = 30;
-    super.damage = 10;
+    super.damage = 0.5;
     super.speed = 1.00;
     this.smell_range = 10;
     this.isLineWalkZombie = Math.random() > 0.5;
@@ -70,6 +70,14 @@ public class Zombie extends Entity
     super.meshview = new MeshView();
     super.meshview.setMesh( null );
   }
+
+  public void makeMaster(){
+  super.health = 30;
+  super.damage = 1;
+  super.speed = 1.50;
+  this.smell_range = 15;
+
+}
 
   @Override
   public void update(double time)
@@ -220,7 +228,7 @@ public class Zombie extends Entity
       double distance = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
       if( distance < 20 )
       {
-        GameMain.player.health -= 0.5;
+        GameMain.player.health -= this.damage;
       }
     }
     if( super.state_timer > 850) // 600 ms for attack to complete.
