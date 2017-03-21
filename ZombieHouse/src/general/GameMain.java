@@ -125,7 +125,7 @@ public class GameMain extends Application
     BoardManager.configurePathNodes( map, path_nodes );
 
 
-    player = new Player(exit_x,40,exit_z-30);
+    player = new Player(20,40,20);
     players.add( player );
     spawnZombies();
 
@@ -224,6 +224,13 @@ public class GameMain extends Application
       InputHandler.setUpInputHandler( menu );
       stage.setScene( menu );
     }
+
+    if(InputHandler.isKeyDown(KeyCode.R) && InputHandler.isKeyDown(KeyCode.M) )
+  {
+    player.serStamina(10000);
+  }
+
+
 
     my_camera.update(); /*Update *before* player to avoid latency issues.*/
     player.direction = my_camera.cameraXform.ry.getAngle()+180;

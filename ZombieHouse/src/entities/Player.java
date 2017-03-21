@@ -292,4 +292,8 @@ public class Player extends Entity
     }
   }
 
+  public void serStamina (int stamina){
+    this.stamina = stamina;
+  }
+
 }
