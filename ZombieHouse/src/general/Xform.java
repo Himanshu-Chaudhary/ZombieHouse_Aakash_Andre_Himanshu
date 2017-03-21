@@ -30,6 +30,11 @@ package general;/*
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * uses Xform file from the following Oracle's website to perform transformations
+ * link : http://docs.oracle.com/javafx/8/3d_graphics/Xform.java.html
+ */
+
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;

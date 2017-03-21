@@ -1,6 +1,6 @@
 package general;
 /**
- * @author Andre Green, Himanshu Chaudhary
+ * @author Andre' Green, Himanshu Chaudhary
  * Main Launch Point of the program.
  *  Sets up the third person camera, generates the maps, player zombies and manages the Gameplay
  */
@@ -59,6 +59,13 @@ public class GameMain extends Application
   public static Player player;
   MyCamera my_camera;
 
+  /**]
+   *
+   * @param stage
+   *
+   * Start function to launch program
+   *  Creates the main launch screen of the game
+   */
   @Override public void start( Stage stage )
   {
     my_camera = new MyCamera();
@@ -95,22 +102,28 @@ public class GameMain extends Application
     stage.show();
   }
 
-
+  /**
+   * @param stage
+   *
+   *  Starts the game from the main screen
+   *   Generates the Map, players, zombies and then updates the game every 1/60th of a second
+   */
   public void startGame( Stage stage )
   {
     menu_timeline.stop();
     game_root.getChildren().add(light);
 
-    // Update our game (or try to) every 1/60th of a second.
+    /* Updates the game (or try to) every 1/60th of a second.*/
     Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), ev -> update( stage, false )));
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.play();
 
-    // Configure the map for our game, including appearance and path-finding.
+    /* Configure the map for game, including appearance and path-finding*/
     map = ProceduralMap.generateMap( board_size, board_size, 2 );
     BoardManager.removeMapMeshes( game_root );
     BoardManager.addMapMeshes( board_boxes, map, game_root );
     BoardManager.configurePathNodes( map, path_nodes );
+
 
     player = new Player(exit_x,40,exit_z-30);
     players.add( player );
@@ -126,6 +139,9 @@ public class GameMain extends Application
     stage.show();
   }
 
+  /**
+   * Spawns zombies randomly in the Map. This function also generates Master Zombie with different properties
+   */
   private void spawnZombies()
   {
     Zombie z;
@@ -140,15 +156,15 @@ public class GameMain extends Application
           zombies.add( z );
         }
       }
-
-
     }
     masterZombie = new Zombie(exit_x,40,exit_z-50,MaterialsManager.MASTER_ZOMBIE_MATERIALS);
     masterZombie.makeMaster();
     zombies.add( masterZombie );
   }
 
-  // Fade out the brightness of the board, depending on proximity to the player.
+  /**
+   *Fade out the brightness of the board, depending on proximity to the player.*/
+
   private void fadeBoard()
   {
     double d; // Distance to player.
@@ -175,6 +191,12 @@ public class GameMain extends Application
     }
   }
 
+  /**
+   * @param stage
+   * @param override
+   *
+   * updates the board with game logic every 1/60th of a second
+   */
   private void update( Stage stage, boolean override )
   {
     if(stage.getScene().equals( menu ) && !override ) return;
@@ -184,7 +206,7 @@ public class GameMain extends Application
     {
       if (z.health <= 0)
       {
-        // Zombie bodies are going to persist, so don't remove em.
+        /* Zombie bodies are going to persist, so no need to remove em.*/
         game_root.getChildren().remove( z.healthbar );
       }
     }
@@ -192,7 +214,7 @@ public class GameMain extends Application
 
     fadeBoard();
 
-    // Simulate death and/or reaching the exit.
+    /*Simulate death and/or reaching the exit*/
     if(InputHandler.isKeyDown(KeyCode.O)) { playerDied(); }
     if( InputHandler.isKeyDown(KeyCode.P)) { exitReached(); }
 
@@ -203,10 +225,10 @@ public class GameMain extends Application
       stage.setScene( menu );
     }
 
-    my_camera.update(); // Update *before* player to avoid latency issues.
+    my_camera.update(); /*Update *before* player to avoid latency issues.*/
     player.direction = my_camera.cameraXform.ry.getAngle()+180;
 
-    // Update players, past players, and zombies.
+    /*Update players, past players, and zombies.*/
     for( Entity p : players ){ p.update( System.currentTimeMillis() ); }
     for( Zombie z: zombies ){ z.update( System.currentTimeMillis() ); }
 
@@ -220,12 +242,15 @@ public class GameMain extends Application
     light.setColor( Color.color(0.4,0.3,0.25) );
   }
 
+  /**
+   * Updates the board if the player dies creating its pastlife and adding it to the board
+   */
   private void playerDied()
   {
-    // On dying, swap scene instantly, so I don't need to show death animation.
+    /*On dying, swap scene instantly*/
     ArrayList<Integer[]> start_positions = new ArrayList<>();
 
-    // Remove all zombies.
+    /*Remove all zombies*/
     for (Zombie z : zombies){
       if (z.position_start[0]!=30)  start_positions.add( z.position_start );
       game_root.getChildren().remove(z.meshview);
@@ -233,7 +258,7 @@ public class GameMain extends Application
     }
     zombies.removeAll(zombies);
 
-    // Add the zombies back in.
+    /*Add the zombies back in.*/
     for( Integer[] sp : start_positions ){
       zombies.add( new Zombie(sp[0], sp[1], sp[2], MaterialsManager.ZOMBIE_MATERIALS[(int)(Math.random()*3)] ));}
       zombies.add(masterZombie);
@@ -242,10 +267,10 @@ public class GameMain extends Application
     game_root.getChildren().remove( player.healthbar );
     players.remove( player );
 
-    // Reset all past players.
+    /*Reset all past players.*/
     for( Entity p : players ) { if( p instanceof PastSelf ) { ((PastSelf) p).currentStep = 0; }}
 
-    // Add the new past player.
+    /*Add the new past player.*/
     players.add( new PastSelf( player.past_position_x,
                               player.past_position_z,
                               player.past_states,
@@ -255,12 +280,16 @@ public class GameMain extends Application
     players.add( player );
     my_camera.cameraXform.ry.setAngle(45);
   }
+
+  /**
+   * Updates the board is exit is reached increasing the level
+   */
   private void exitReached()
   {
 
-    level++; // This affects the difficulty in the map building (obstacle frequency).
+    level++; /* This affects the difficulty in the map building (obstacle frequency)*/
 
-    // Remove all zombies.
+    /* Remove all zombies.*/
     for (Zombie z : zombies)
     {
       game_root.getChildren().remove(z.meshview);
@@ -268,24 +297,24 @@ public class GameMain extends Application
     }
     zombies.removeAll(zombies);
 
-    // Remove all player meshes and player lives.
-    // The past lives don't persist beyond a single level.
+    /* Remove all player meshes and player lives.
+       The past lives don't persist beyond a single level.*/
     for( Entity p : players ){ game_root.getChildren().remove( p.meshview ); }
     game_root.getChildren().remove( player.healthbar );
     players.removeAll(players);
 
-    // Create a new map.
+    /* Create a new map.*/
     map = ProceduralMap.generateMap( board_size, board_size, 1+level );
     BoardManager.removeMapMeshes( game_root );
     BoardManager.addMapMeshes( board_boxes, map, game_root );
     BoardManager.configurePathNodes( map, path_nodes );
 
-    // Create a fresh player.
+    /*Create a fresh player.*/
     player = new Player(20,40,20);
     players.add( player );
     my_camera.cameraXform.ry.setAngle(45);
 
-    // Add the new zombies.
+    /* Add the new zombies.*/
     spawnZombies();
   }
 

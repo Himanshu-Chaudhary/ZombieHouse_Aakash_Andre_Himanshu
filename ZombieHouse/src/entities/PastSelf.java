@@ -9,6 +9,12 @@ import javafx.scene.shape.MeshView;
 
 import java.util.List;
 
+/**
+ * @author Himanshu Chaudhary, Andre' Green
+ *
+ * has all the settings and attributes for pastself in the game
+ */
+
 public class PastSelf extends Entity
 {
   public int currentStep;
@@ -42,8 +48,15 @@ public class PastSelf extends Entity
     return currentStep>=totalStep;
   }
 
+  /**
+   * @param time
+   *      the time at which the update takes place
+   *
+   * Updates the state of the pastself by looking at the right index of the stored moves of the player
+   */
   public void update( double time )
   {
+    /* if pastself is dead, it doesn't need to update*/
     if (currentStep==(totalStep+2)) return;
 
     super.meshview.setMaterial( super.material );
@@ -91,7 +104,11 @@ public class PastSelf extends Entity
     super.update_timer = time;
   }
 
-  // When the past self attacks, it still needs to do damage.
+  /**
+   * Attacks at the time player attacked and
+   * When the past self attacks, it still  damages the player
+   */
+
   private void attack(double dt)
   {
     if( super.state_timer > 400 )

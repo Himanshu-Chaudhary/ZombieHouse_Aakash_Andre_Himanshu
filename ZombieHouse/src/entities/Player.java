@@ -14,6 +14,13 @@ import sound.SoundManager;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * @author Himanshu Chaudhary, Andre' Green, Aakash Basnet
+ *
+ * has all the settings and attributes for zombies in the game
+ */
+
 public class Player extends Entity
 {
   public List<Double> past_position_x = new ArrayList<>();
@@ -64,6 +71,12 @@ public class Player extends Entity
     GameMain.game_root.getChildren().add(this.healthbar);
   }
 
+  /**
+   * @param time
+   *      the time at which the update takes place
+   *
+   * Updates the state of the player and then changes its behaviour and mesh based upon its state
+   */
   @Override public void update( double time )
   {
     // Set up information for the past player.
@@ -93,17 +106,15 @@ public class Player extends Entity
     if( super.state.equals("WALK") || super.state.equals("RUN")){ walk( dt_ms ); }
     if( super.state.equals("ATTACK")){ attack( dt_ms ); }
 
-
-//    double d = Math.sqrt(Math.pow(super.position_x-GameMain.player.position_x,2)+Math.pow(super.position_z-GameMain.player.position_z,2));
-//    d = d>100? 0 : 1-d/100;
-//    this.material.setDiffuseColor( Color.color(d,d,d));
-
     super.display( dt_ms );
     this.drawHealthbar();
 
     super.update_timer = time;
   }
 
+  /**
+   * draws healthbar on the floor sorrounding the zombie
+   */
   private void drawHealthbar()
   {
     this.healthbar.setTranslateX( super.position_x );
@@ -206,6 +217,12 @@ public class Player extends Entity
       soundManager.playPlayerFootStep();
     }
   }
+
+  /**
+   * @param dt
+   *
+   * tries to attack and then the health point is also deducted if zombie is in proximity
+   */
   private void attack(double dt)
   {
     if(GameMain.zombies.size()==0){
@@ -233,12 +250,20 @@ public class Player extends Entity
     }
   }
 
+  /**
+   * changes the state to attack which is used to update its mesh
+   */
   private void instigateAttack() {
     if(InputHandler.isKeyDown(KeyCode.SPACE))
     {
       super.proposeState("ATTACK", 1, 1);
     }
   }
+
+  /**
+   * changes the state to run which is used to update its mesh
+   */
+
   private void instigateRun()
   {
     if( super.state.equals("WALK") && InputHandler.isKeyDown(KeyCode.SHIFT)
@@ -247,6 +272,11 @@ public class Player extends Entity
       this.proposeState("RUN", 0, 1);
     }
   }
+
+  /**
+   * changes the state to idle which is used to update its mesh
+   */
+
   private void instigateIdle()
   {
     super.proposeState("IDLE", 0, 1);

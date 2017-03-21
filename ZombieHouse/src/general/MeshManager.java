@@ -11,6 +11,13 @@ import javafx.scene.shape.MeshView;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Andre' Green, Himanshu Chaudhary
+ *
+ * Meshes are imported using jfx3dOBjimpporter by InteractiveMesh.org. The importer returned an array of Nodes
+ * (Meshviews to be precise) whose meshes were pulled and added to a map so that meshes did not need to be
+ * imported multiple times.
+ */
 public class MeshManager
 {
   private static ObjModelImporter importer = new ObjModelImporter();
@@ -18,8 +25,8 @@ public class MeshManager
   private static Map<String, Material> materials = new HashMap<>();
   private static Map<String, Integer[]> animation_start_and_finish = new HashMap<>();
 
-  // Sadly, for the moment this has to be done manually.
-  // Enter in the starting and ending frames for each animation.
+
+  /* definig the starting and ending frames for each animation.*/
   static
   {
     animation_start_and_finish.put("player_IDLE", new Integer[]{0, 1});
@@ -35,6 +42,15 @@ public class MeshManager
     animation_start_and_finish.put("player_DEAD", new Integer[]{0, 1});
   }
 
+  /**
+   *
+   * @param e
+   *       entity whose mesh needs to updated
+   * @return
+   *       the updated mesh based upon its current state
+   *
+   * This function uses the state assigned to the mesh to generate a mesh for the entity
+   */
   public static Mesh updateMesh ( Entity e )
   {
     String animation_name = String.format("%s_%s", e.name, e.state);
@@ -54,16 +70,19 @@ public class MeshManager
     return mesh;
   }
 
+  /**
+   * @param name
+   *
+   * @return the mesh based upon its name
+   */
+
   public static Mesh getMesh( String name )
   {
-    // Add the quick reference import here so we don't import a million times over.
+    /* Add the quick reference import here */
     if( meshes.containsKey(name) ){ return meshes.get(name); }
     importer.read("ZombieHouse/resources/meshes/"+name+".obj");
     Node[] temp = importer.getImport();
-
-
     Mesh mesh = ((MeshView)temp[0]).getMesh();
-    //System.out.println(" " + ((MeshView) temp[0]).getMaterial());
 
     meshes.put( name, mesh );
     return mesh;

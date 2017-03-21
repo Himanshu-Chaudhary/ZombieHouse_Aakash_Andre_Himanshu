@@ -11,6 +11,8 @@ import javafx.scene.input.KeyCode;
  *
  * uses Xform file from the following Oracle's website to perform transformations
  * link : http://docs.oracle.com/javafx/8/3d_graphics/Xform.java.html
+ *
+ * Sets up the third person view for the camera
  */
 public class MyCamera
 {

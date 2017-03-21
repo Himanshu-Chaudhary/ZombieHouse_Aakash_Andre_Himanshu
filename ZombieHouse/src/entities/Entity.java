@@ -7,6 +7,11 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 
+/**
+ * @author Andre' Green, Aakash Basnet
+ *
+ * This class contains all the methodds common between player, zombie and pastself
+ */
 public abstract class Entity
 {
   public String name;
@@ -53,7 +58,6 @@ public abstract class Entity
     this.meshview.setScaleZ(6);
     this.meshview.setRotationAxis(Rotate.Y_AXIS);
     this.meshview.setRotate( this.direction );
-    //this.material = (PhongMaterial) (MeshManager.getMaterial("green_box"));
     this.meshview.setMaterial( this.material );
 
     if( this.meshview != null && !GameMain.game_root.getChildren().contains( this.meshview ))

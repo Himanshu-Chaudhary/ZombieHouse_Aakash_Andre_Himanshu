@@ -17,6 +17,11 @@ import pathfinding.PathNode;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Andre' Green
+ *
+ * Uses textures to generate 3D version of the Map
+ */
 public class BoardManager
 {
   private static ArrayList<Mesh> mapMeshes = new ArrayList<>();
@@ -44,6 +49,14 @@ public class BoardManager
     mapMeshes.add( MeshManager.getMesh("walls/R4_Obstacle"));
   }
 
+  /**
+   * @param map
+   *        the map of the game
+   * @param path_nodes
+   *       Path nodes containing information about each node
+   *
+   *  This function configures the nodes of the regions
+   */
   public static void configurePathNodes( Tile[][] map, PathNode[][] path_nodes )
   {
     for( int x = 0; x < map.length; x++ )
@@ -56,6 +69,15 @@ public class BoardManager
       }
     }
   }
+
+  /**
+   * @param board_boxes
+   *        is the region of the Map
+   * @param map
+   * @param group
+   *
+   * This function adds the meshes of the map based upon its region
+   */
 
   public static void addMapMeshes(Box[][][] board_boxes, Tile[][] map, Group group )
   {
@@ -78,7 +100,6 @@ public class BoardManager
         group.getChildren().add(board_boxes[0][x][y]);
         group.getChildren().add(board_boxes[1][x][y]);
 
-        temp_material = new PhongMaterial();
         String mesh_name;
 
         if( map[x][y].getRegion() == -1) //The exit.
@@ -93,13 +114,8 @@ public class BoardManager
         }
         else if( map[x][y].isWall && !map[x][y].isObstacle ) // A peninsula, corner or wall.
         {
-          // First set the floor below the wall.
+          /*First set the floor below the wall.*/
           // I pulled a stunt here.
-//          temp_material = new PhongMaterial( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseColor() );
-//          temp_material.setDiffuseMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
-//          temp_material.setSpecularMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getDiffuseMap() );
-//          temp_material.setBumpMap( MaterialsManager.FLOOR_MATERIALS[map[x][y].getRegion()-1].getBumpMap() );
-//          board_boxes[0][x][y].setMaterial( temp_material ); // Just for now. I'll sort this later.
           boolean above = !( y+1 < GameMain.board_size-1 && (!map[x][y+1].isWall && !map[x][y+1].isBorder) );
           boolean below = !( y-1 > 0 && (!map[x][y-1].isWall && !map[x][y-1].isBorder) );
           boolean left = !( x+1 < GameMain.board_size-1 && (!map[x+1][y].isWall && !map[x+1][y].isBorder) );
@@ -239,6 +255,12 @@ public class BoardManager
       }
     }
   }
+
+  /**
+   * @param group
+   *
+   * removes the meshes from the group
+   */
 
   public static void removeMapMeshes(Group group )
   {

@@ -1,5 +1,10 @@
 package general;
 
+/**
+ * @author Andre' Green
+ * uses different textures to create material and assigns them to static final variables
+ */
+
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
