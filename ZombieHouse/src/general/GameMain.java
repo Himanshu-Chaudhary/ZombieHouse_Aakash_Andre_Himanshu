@@ -1,11 +1,15 @@
 package general;
+/**
+ * @author Andre Green, Himanshu Chaudhary
+ * Main Launch Point of the program.
+ *  Sets up the third person camera, generates the maps, player zombies and manages the Gameplay
+ */
 
 import entities.Entity;
 import entities.PastSelf;
 import entities.Zombie;
 import entities.Player;
 import camera.MyCamera;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -26,6 +30,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import pathfinding.PathNode;
 import java.util.ArrayList;
+
 
 public class GameMain extends Application
 {

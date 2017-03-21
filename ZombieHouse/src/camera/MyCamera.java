@@ -6,6 +6,12 @@ import general.Xform;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.input.KeyCode;
 
+/**
+ * @author Andre Green
+ *
+ * uses Xform file from the following Oracle's website to perform transformations
+ * link : http://docs.oracle.com/javafx/8/3d_graphics/Xform.java.html
+ */
 public class MyCamera
 {
   public final PerspectiveCamera camera = new PerspectiveCamera(true);
