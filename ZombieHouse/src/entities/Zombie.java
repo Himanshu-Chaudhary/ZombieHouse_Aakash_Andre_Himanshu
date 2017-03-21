@@ -219,12 +219,15 @@ public class Zombie extends Entity
       if( distance < 20 )
       {
         GameMain.player.health -= 0.5;
+        soundManager.playZombiePunch();
+        if(GameMain.player.health <= 0 ) soundManager.playPlayerDeath();
       }
     }
     if( super.state_timer > 850) // 600 ms for attack to complete.
     {
       super.proposeState("IDLE", 0, 2);
     }
+
   }
   private void walk(double dt)
   {
@@ -244,11 +247,12 @@ public class Zombie extends Entity
       super.position_x += x_component*super.speed;
       super.position_z += z_component*super.speed;
     }
-    if(CalculateDistance() < 250) playGroan();
+    if(CalculateDistance() < 200) playGroan(0.99 );
+
   }
 
-  private void playGroan(){
-    if (Math.random() > 0.98) {
+  private void playGroan(double probability){
+    if (Math.random() > probability) {
       soundManager.playZombieGroan(CalculateDistance(),CalculateBalance());
     }
 
@@ -267,13 +271,13 @@ public class Zombie extends Entity
     double x_comp = (GameMain.player.position_x - super.position_x) / CalculateDistance();
     double z_comp = (GameMain.player.position_z - super.position_z)/CalculateDistance();
 
-    double x2_comp = Math.cos(Math.toRadians(GameMain.player.direction));
+    double x2_comp = Math.cos(Math.toRadians(GameMain.player.direction));      
     double z2_comp = Math.sin(Math.toRadians(GameMain.player.direction));
 
     double dot_product = x_comp*x2_comp + z_comp*z2_comp;
 
-    balance = ( ( dot_product ) - 0.5) * 2;
-    //System.out.println(balance);
+    balance = dot_product ;
+    System.out.println(balance);
 
     return balance;
 

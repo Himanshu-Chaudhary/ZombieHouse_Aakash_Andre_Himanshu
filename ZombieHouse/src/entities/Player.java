@@ -126,7 +126,7 @@ public class Player extends Entity
     {
       this.speed = 1;
       if(this.stamina > this.stamina_decay) this.stamina -= this.stamina_decay;
-      else { this.stamina = 0; }
+      else { this.stamina = 0;}
     }
 
 
@@ -199,6 +199,9 @@ public class Player extends Entity
       }
       super.position_x += x_component;
       super.position_z += z_component;
+
+
+      if(this.stamina < 10) soundManager.playHeartBeat();
       soundManager.playPlayerFootStep();
     }
   }
