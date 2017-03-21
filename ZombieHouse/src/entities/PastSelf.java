@@ -44,6 +44,8 @@ public class PastSelf extends Entity
 
   public void update( double time )
   {
+    if (currentStep==(totalStep+2)) return;
+
     super.meshview.setMaterial( super.material );
     double dt_ms = time - super.update_timer;
     state_timer += dt_ms;
@@ -69,10 +71,22 @@ public class PastSelf extends Entity
 
       currentStep++;
     }
+    else if (currentStep == totalStep)
+    {
+      this.proposeState("DIE", 0, 10);
+      display( dt_ms );
+      currentStep++;
+
+    }
     else
     {
-      this.proposeState("RUN", 0, 10);
-      display( dt_ms );
+      {
+        this.proposeState("DEAD", 0, 10);
+        display( dt_ms );
+        currentStep++;
+        System.out.println("Already Dead");
+
+      }
     }
     super.update_timer = time;
   }
@@ -98,5 +112,8 @@ public class PastSelf extends Entity
     }
 
   }
+
+
+
 
 }
